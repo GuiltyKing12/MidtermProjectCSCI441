@@ -70,9 +70,9 @@ void render() {
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  float x = 100 * cos((float)a / 180 * 3.14159);
-  float z = 100 * sin((float)a / 180 * 3.14159);
-  gluLookAt(x, 40, z,
+  float x = 200 * cos((float)a / 180 * 3.14159);
+  float z = 200 * sin((float)a / 180 * 3.14159);
+  gluLookAt(x, 200, z,
             0, 0, 0,
             0, 1, 0);
 
