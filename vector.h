@@ -1,4 +1,5 @@
 #pragma once
+#include <math.h>
 
 class Vector {
   public:
@@ -29,13 +30,13 @@ class Vector {
     }
     
     float Dot(Vector a) {
-        return acos((a.x * x + a.y * y + a.z * z) / (a.magnitude * this->magnitude));
+        return acos((a.x * x + a.y * y + a.z * z) / (a.magnitude() * this->magnitude()));
     }
     
     Vector Cross(Vector a) {
-        nx = a.y * z - y * a.z;
-        ny = -(a.x * z - x * a.z);
-        nz = a.x * y - x * a.y;
+        float nx = a.y * z - y * a.z;
+        float ny = -(a.x * z - x * a.z);
+        float nz = a.x * y - x * a.y;
         
         return Vector(nx, ny, nz);
     }

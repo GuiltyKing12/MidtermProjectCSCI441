@@ -17,6 +17,7 @@
 #include <vector>
 #include <string>
 #include "terrain.h"
+#include "camera.h"
 
 // Constants.
 

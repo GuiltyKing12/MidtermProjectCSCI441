@@ -22,7 +22,7 @@
 ########################################
 
 TARGET = guildWars
-OBJECTS = main.o terrain.o
+OBJECTS = main.o terrain.o camera.o
 
 LOCAL_INC_PATH = /Users/jpaone/Desktop/include
 LOCAL_LIB_PATH = /Users/jpaone/Desktop/lib
