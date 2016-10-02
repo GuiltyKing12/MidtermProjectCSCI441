@@ -31,3 +31,6 @@ guildWars
 
 # Vim
 *.swp
+
+# Mac stuff
+.DS_Store
