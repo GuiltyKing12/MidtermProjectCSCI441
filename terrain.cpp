@@ -9,17 +9,22 @@ Terrain::Terrain(std::string fn) {
 }
 
 void Terrain::draw() {
-  float step = 0.01;
+  int res = 100;
 
   glPushMatrix();
     glColor3f(0.1, 0.8, 0.1);
     glBegin(GL_TRIANGLES);
-      for (float z = 0.0; z < side_length; z += step) {
-        for (float x = 0.0; x < side_length; x += step) {
-          Point p_tl = bez_patch((int)x, (int)z, x, z);
-          Point p_tr = bez_patch((int)(x + step), (int)z, x + step, z);
-          Point p_bl = bez_patch((int)x, (int)(z + step), x, z + step);
-          Point p_br = bez_patch((int)(x + step), (int)(z + step), x + step, z + step);
+      for (int z = 0; z < side_length * res; z += 1) {
+        for (int x = 0; x < side_length * res; x += 1) {
+          float left = (float)x / res;
+          float right = (float)(x + 1) / res;
+          float top = (float)z / res;
+          float bottom = (float)(z + 1) / res;
+
+          Point p_tl = bez_patch(left, top);
+          Point p_tr = bez_patch(right, top);
+          Point p_bl = bez_patch(left, bottom);
+          Point p_br = bez_patch(right, bottom);
 
           vertex(p_tl);
           vertex(p_bl);
@@ -73,12 +78,17 @@ void Terrain::vertex(Point p) {
   glVertex3f(p.x, p.y, p.z);
 }
 
-Point Terrain::bez_patch(int ox, int oz, float x, float z) {
-  if (ox == side_length) { 
-    ox -= 1;
+Point Terrain::bez_patch(float x, float z) {
+  int ox = 0;
+  int oz = 0;
+
+  while (x > 1.0) {
+    ox += 1;
+    x -= 1.0;
   }
-  if (oz == side_length) {
-    oz -= 1;
+  while (z > 1.0) {
+    oz += 1;
+    z -= 1.0;
   }
 
   return bez_curve(z,

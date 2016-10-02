@@ -29,7 +29,7 @@ class Terrain {
 
     void load_points(std::string fn);
     void vertex(Point p);
-    Point bez_patch(int ox, int oz, float x, float z);
+    Point bez_patch(float x, float z);
     Point bez_curve(float t, Point p0, Point p1, Point p2, Point p3);
 };
 
