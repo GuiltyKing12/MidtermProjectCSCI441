@@ -35,6 +35,7 @@ GLuint envDL;
 Terrain t;
 
 bool keys_down[4] = {false, false, false, false};
+int a = 0;
 
 // Environment setup functions.
 
@@ -69,7 +70,9 @@ void render() {
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  gluLookAt(0, 40, 100,
+  float x = 200 * cos((float)a / 180 * 3.14159);
+  float z = 200 * sin((float)a / 180 * 3.14159);
+  gluLookAt(x, 200, z,
             0, 0, 0,
             0, 1, 0);
 
@@ -123,7 +126,7 @@ void render_timer(int value) {
 }
 
 void anim_timer(int value) {
-  // animate here
+  a = (a + 2) % 360;
 
   glutTimerFunc(1000.0 / 10.0, anim_timer, 0);
 }
@@ -139,9 +142,9 @@ void create_menu() {
 void init_scene() {
   glEnable(GL_DEPTH_TEST);
 
-  float lightCol[4] = { 1, 1, 1, 1};
+  float lightCol[4] = { 1, 1, 1, 1 };
   float ambientCol[4] = { 0.0, 0.0, 0.0, 1.0 };
-  float lPosition[4] = { 10, 10, 10, 1 };
+  float lPosition[4] = { 0, 80, 0, 1 };
   glLightfv( GL_LIGHT0, GL_POSITION,lPosition );
   glLightfv( GL_LIGHT0, GL_DIFFUSE,lightCol );
   glLightfv( GL_LIGHT0, GL_AMBIENT, ambientCol );

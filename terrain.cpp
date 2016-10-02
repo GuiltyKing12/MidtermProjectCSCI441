@@ -9,39 +9,53 @@ Terrain::Terrain(std::string fn) {
 }
 
 void Terrain::draw() {
-  float step = 0.01;
-
-  glDisable(GL_LIGHTING);
+  int res = 100;
 
   glPushMatrix();
-    glColor3f(1, 1, 1);
-    glBegin(GL_LINES);
-      for (float z = 0.0; z < 1.0; z += step) {
-        for (float x = 0.0; x < 1.0; x += step) {
-          Point p = bez_patch(x, z);
-          Point px = bez_patch(x + step, z);
-          Point pz = bez_patch(x, z + step);
+    glColor3f(0.1, 0.8, 0.1);
+    glBegin(GL_TRIANGLES);
+      for (int z = 0; z < side_length * res; z += 1) {
+        for (int x = 0; x < side_length * res; x += 1) {
+          float left = (float)x / res;
+          float right = (float)(x + 1) / res;
+          float top = (float)z / res;
+          float bottom = (float)(z + 1) / res;
 
-          glVertex3f(p.x, p.y, p.z);
-          glVertex3f(px.x, px.y, px.z);
-          glVertex3f(p.x, p.y, p.z);
-          glVertex3f(pz.x, pz.y, pz.z);
+          Point p_tl = bez_patch(left, top);
+          Point p_tr = bez_patch(right, top);
+          Point p_bl = bez_patch(left, bottom);
+          Point p_br = bez_patch(right, bottom);
+
+          vertex(p_tl);
+          vertex(p_bl);
+          vertex(p_br);
+
+          vertex(p_tl);
+          vertex(p_br);
+          vertex(p_tr);
         }
       }
     glEnd();
   glPopMatrix();
-
-  glEnable(GL_LIGHTING);
 }
 
 void Terrain::load_points(std::string fn) {
-  control_points = new Point*[4];
-  for (int i = 0; i < 4; i += 1) {
-    control_points[i] = new Point[4];
-  }
-
   std::ifstream infile(fn.c_str());
   std::string line;
+  getline(infile, line);
+  side_length = atoi(line.c_str());
+
+  control_points = new Point***[side_length];
+  for (int i = 0; i < side_length; i += 1) {
+    control_points[i] = new Point**[side_length];
+    for (int j = 0; j < side_length; j += 1) {
+      control_points[i][j] = new Point*[4];
+      for (int k = 0; k < 4; k += 1) {
+        control_points[i][j][k] = new Point[4];
+      }
+    }
+  }
+
   int index = 0;
   while (infile) {
     if (!getline(infile, line)) {
@@ -53,25 +67,43 @@ void Terrain::load_points(std::string fn) {
     float z = atof(line.substr(line.find_last_of(',') + 1).c_str());
 
     Point p(x, y, z);
-    control_points[index / 4][index % 4] = p;
+    int inner_index = index % 16;
+    int outer_index = index / 16;
+    control_points[outer_index / side_length][outer_index % side_length][inner_index / 4][inner_index % 4] = p;
     index += 1;
   }
 }
 
+void Terrain::vertex(Point p) {
+  glVertex3f(p.x, p.y, p.z);
+}
+
 Point Terrain::bez_patch(float x, float z) {
+  int ox = 0;
+  int oz = 0;
+
+  while (x > 1.0) {
+    ox += 1;
+    x -= 1.0;
+  }
+  while (z > 1.0) {
+    oz += 1;
+    z -= 1.0;
+  }
+
   return bez_curve(z,
     bez_curve(x,
-      control_points[0][0], control_points[0][1],
-      control_points[0][2], control_points[0][3]),
+      control_points[oz][ox][0][0], control_points[oz][ox][0][1],
+      control_points[oz][ox][0][2], control_points[oz][ox][0][3]),
     bez_curve(x,
-      control_points[1][0], control_points[1][1],
-      control_points[1][2], control_points[1][3]),
+      control_points[oz][ox][1][0], control_points[oz][ox][1][1],
+      control_points[oz][ox][1][2], control_points[oz][ox][1][3]),
     bez_curve(x,
-      control_points[2][0], control_points[2][1],
-      control_points[2][2], control_points[2][3]),
+      control_points[oz][ox][2][0], control_points[oz][ox][2][1],
+      control_points[oz][ox][2][2], control_points[oz][ox][2][3]),
     bez_curve(x,
-      control_points[3][0], control_points[3][1],
-      control_points[3][2], control_points[3][3]));
+      control_points[oz][ox][3][0], control_points[oz][ox][3][1],
+      control_points[oz][ox][3][2], control_points[oz][ox][3][3]));
 }
 
 Point Terrain::bez_curve(float t, Point p0, Point p1, Point p2, Point p3) {

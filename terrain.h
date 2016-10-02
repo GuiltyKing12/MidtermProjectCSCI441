@@ -24,9 +24,11 @@ class Terrain {
     void draw();
 
   private:
-    Point** control_points;
+    int side_length;
+    Point**** control_points;
 
     void load_points(std::string fn);
+    void vertex(Point p);
     Point bez_patch(float x, float z);
     Point bez_curve(float t, Point p0, Point p1, Point p2, Point p3);
 };
