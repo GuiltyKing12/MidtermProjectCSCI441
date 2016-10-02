@@ -11,27 +11,27 @@ Terrain::Terrain(std::string fn) {
 void Terrain::draw() {
   float step = 0.01;
 
-  glDisable(GL_LIGHTING);
-
   glPushMatrix();
-    glColor3f(1, 1, 1);
-    glBegin(GL_LINES);
+    glColor3f(0.1, 0.8, 0.1);
+    glBegin(GL_TRIANGLES);
       for (float z = 0.0; z < 1.0; z += step) {
         for (float x = 0.0; x < 1.0; x += step) {
-          Point p = bez_patch(x, z);
-          Point px = bez_patch(x + step, z);
-          Point pz = bez_patch(x, z + step);
+          Point p_tl = bez_patch(x, z);
+          Point p_tr = bez_patch(x + step, z);
+          Point p_bl = bez_patch(x, z + step);
+          Point p_br = bez_patch(x + step, z + step);
 
-          glVertex3f(p.x, p.y, p.z);
-          glVertex3f(px.x, px.y, px.z);
-          glVertex3f(p.x, p.y, p.z);
-          glVertex3f(pz.x, pz.y, pz.z);
+          vertex(p_tl);
+          vertex(p_bl);
+          vertex(p_br);
+
+          vertex(p_tl);
+          vertex(p_br);
+          vertex(p_tr);
         }
       }
     glEnd();
   glPopMatrix();
-
-  glEnable(GL_LIGHTING);
 }
 
 void Terrain::load_points(std::string fn) {
@@ -56,6 +56,10 @@ void Terrain::load_points(std::string fn) {
     control_points[index / 4][index % 4] = p;
     index += 1;
   }
+}
+
+void Terrain::vertex(Point p) {
+  glVertex3f(p.x, p.y, p.z);
 }
 
 Point Terrain::bez_patch(float x, float z) {
