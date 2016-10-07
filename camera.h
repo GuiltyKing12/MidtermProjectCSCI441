@@ -7,6 +7,8 @@ class Camera {
     int mode;
     Point position;
     Vector camDir;
+    
+    Point lastLook;
     float camRadius, camTheta, camPhi;
     
   // consturctors for camera
@@ -20,17 +22,15 @@ class Camera {
         camRadius = cameraRadius;
         camTheta = cameraTheta;
         camPhi = cameraPhi;
-        
+        //position = Point(posX, posY, posZ);
         switch(mode) {
             case 1 :
                 position = Point(posX, posY, posZ);
                 break;
             case 2 :
-                position = Point(posX+cameraRadius, posY+cameraRadius, posZ+cameraRadius);
+                position = Point(posX+cameraRadius*camDir.x, posY+cameraRadius*camDir.y, posZ+cameraRadius*camDir.z);
                 break;
-        
         }
-        
         recomputeOrientation();
     }
     
@@ -45,5 +45,5 @@ class Camera {
     void switchMode(int setMode);
     
     void recomputeOrientation();
-    void look();
+    void look(Point look);
 };

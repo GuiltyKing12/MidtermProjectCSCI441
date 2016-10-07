@@ -10,6 +10,8 @@
 #include <iostream>
 #include <fstream>
 
+#include "hero.h"
+
 struct Point {
   float x;
   float y;
