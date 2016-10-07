@@ -13,37 +13,50 @@
 #include <math.h>
 
 void Camera::moveForward() {
-    position = camDir * 2 + position;
-    recomputeOrientation();
+    if(mode == 1) {
+        position = camDir * 2 + position;
+        recomputeOrientation();
+    }
 }
 
 void Camera::moveBackward() {
-    position = camDir * 2 + position * -1;
-    recomputeOrientation();
+    if(mode == 1) {
+        position = camDir * -2 + position;
+        recomputeOrientation();
+    }
 }
 
 void Camera::zoom(float radiusChange) {
-    camRadius += radiusChange;
+    if(mode == 2) camRadius += radiusChange;
 }
 
 void Camera::revolve(float theta, float phi) {
-    camTheta += theta;
     
-    camPhi += phi;
-    if(camPhi > 3.14) camPhi -= phi;
-    else if(camPhi < 0) camPhi -= phi;
+        camTheta += theta;
     
-    recomputeOrientation();
+        camPhi += phi;
+        if(camPhi > 3.14) camPhi -= phi;
+        else if(camPhi < 0) camPhi -= phi;
+    
+        recomputeOrientation();
+    
 }
 
 void Camera::switchMode(int setMode) {
     mode = setMode;
+    if(setMode == 1) {
+        camDir = Vector(lastLook.x + -position.x , lastLook.y + -position.y, lastLook.z + -position.z);
+        position =  Point(-camDir.x * sinf(camTheta) * sin(camPhi) + 100, -camDir.y * -cosf(camPhi) + 100, -camDir.z * -cosf(camTheta) * sinf(camPhi) + 100);
+        camPhi = M_PI / 3.0f;
+        camTheta = 2.8f;
+    }
+    recomputeOrientation();
 }
 
 void Camera::recomputeOrientation() {
-    camDir.x = sin(camTheta) * sin(camPhi);
-    camDir.y = cos(camPhi);
-    camDir.z = cos(camTheta) * sin(camPhi);
+    camDir.x = sinf(camTheta) * sin(camPhi);
+    camDir.y = -cosf(camPhi);
+    camDir.z = -cosf(camTheta) * sinf(camPhi);
     
     // and NORMALIZE this directional vector!!!
     float magnitude = sqrt(camDir.x * camDir.x + camDir.y * camDir.y + camDir.z * camDir.z);
@@ -52,7 +65,7 @@ void Camera::recomputeOrientation() {
     camDir.z = camDir.z / magnitude;
 }
 
-void Camera::look() {
+void Camera::look(Point look) {
     switch(mode) {
         case 1 :
             gluLookAt(position.x, position.y, position.z,
@@ -60,8 +73,12 @@ void Camera::look() {
                       0, 1, 0);
             break;
         case 2 :
-            gluLookAt(position.x, position.y, position.z,
-                      0, 0, 0,
+            Vector currentDir = camDir * camRadius;
+            lastLook = look;
+            Point arcPosition = currentDir + look;
+            //position = currentDir + look;
+            gluLookAt(arcPosition.x, arcPosition.y, arcPosition.z,
+                      look.x, look.y, look.z,
                       0, 1, 0);
             break;
     }

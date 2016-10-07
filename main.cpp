@@ -18,6 +18,8 @@
 #include <string>
 #include "terrain.h"
 #include "camera.h"
+#include "Artoria.h"
+#include "Finjuh.h"
 
 // Constants.
 
@@ -32,12 +34,31 @@ size_t window_width = 640;
 size_t window_height = 480;
 
 GLuint envDL;
+GLint leftMouseButton;                      // status of the mouse buttons
+int mouseX = 0, mouseY = 0;                 // last known X and Y of the mouse
 
 Terrain t;
 
+// Camera
+Camera mainCamera;
+Camera fpvCamera;
+
+// Heroes
+Hero* currentHero;
+
+Artoria* artoria;
+Finjuh* finjuh;
+
 bool keys_down[4] = {false, false, false, false};
+bool keys[256];
 int a = 0;
 
+// keyboard actions
+void keyboardActions() {
+    if(keys['i'] || keys['I']) mainCamera.moveForward();
+    else if(keys['k'] || keys['K']) mainCamera.moveBackward();
+    glutPostRedisplay();
+}
 // Environment setup functions.
 
 void generate_env_dl() {
@@ -64,6 +85,7 @@ void resize(int w, int h) {
 }
 
 void render() {
+    keyboardActions();
   glDrawBuffer(GL_BACK);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -73,22 +95,58 @@ void render() {
 
   float x = 200 * cos((float)a / 180 * 3.14159);
   float z = 200 * sin((float)a / 180 * 3.14159);
-  gluLookAt(x, 200, z,
-            0, 0, 0,
-            0, 1, 0);
+  mainCamera.look(currentHero->position);
 
   glCallList(envDL);
 
+  artoria->drawHero();
+  finjuh->drawHero();
+  artoria->moveHeroForward();
+  artoria->recomputeHeroDirection();
+    
   glutSwapBuffers();
 }
 
 // Input callback functions.
+
+void mouseCallback(int button, int state, int thisX, int thisY) {
+    // update the left mouse button states, if applicable for ctrl click
+    if(button == GLUT_LEFT_BUTTON && glutGetModifiers() == GLUT_ACTIVE_CTRL) {
+        leftMouseButton = 100;
+        mouseX = thisX;
+        mouseY = thisY;
+    }
+    else if(button == GLUT_LEFT_BUTTON) {
+        leftMouseButton = state;
+        mouseX = thisX;
+        mouseY = thisY;
+    }
+}
+
+void mouseMotion(int x, int y) {
+    // if ctrl click we zoom rather than move around the hero
+    if(leftMouseButton == 100) {
+        mainCamera.zoom((x - mouseX));
+    }
+    // change positon of the camera
+    if(leftMouseButton == GLUT_DOWN) {
+        float theta = ((x - mouseX) * .005);
+        float phi = ((mouseY - y) * .005);
+        
+        mainCamera.revolve(theta, phi);
+        glutPostRedisplay();	    // redraw our scene from our new camera POV
+    }
+    mouseX = x;
+    mouseY = y;
+}
 
 void normal_keys_down(unsigned char key, int x, int y) {
   if (key == 'q' || key == 'Q' || key == 27) {
     exit(0);
   }
 
+  keys[key] = true;
+    
   if (key == 'w' || key == 'W') {
     keys_down[W] = true;
   } else if (key == 's' || key == 'S') {
@@ -101,6 +159,7 @@ void normal_keys_down(unsigned char key, int x, int y) {
 }
 
 void normal_keys_up(unsigned char key, int x, int y) {
+  keys[key] = false;
   if (key == 'w' || key == 'W') {
     keys_down[W] = false;
   } else if (key == 's' || key == 'S') {
@@ -116,6 +175,16 @@ void menu_callback(int option) {
   if (option == 0) {
     exit(0);
   }
+}
+
+void subMenu_callback(int option) {
+    if (option == 0) currentHero = artoria;
+    else if (option == 1) currentHero = finjuh;
+}
+
+void subMenu2_callback(int option) {
+    if (option == 0) mainCamera.switchMode(1);
+    else if (option == 1) mainCamera.switchMode(2);
 }
 
 // Timer functions.
@@ -135,7 +204,17 @@ void anim_timer(int value) {
 // Misc setup functions.
 
 void create_menu() {
+  int subMenu = glutCreateMenu(subMenu_callback);
+  glutAddMenuEntry("Artoria", 0);
+  glutAddMenuEntry("Finjuh", 1);
+  glutAddMenuEntry("WB", 2);
+  int subMenu2 = glutCreateMenu(subMenu2_callback);
+    glutAddMenuEntry("Free Cam Mode", 0);
+    glutAddMenuEntry("Arcball Cam Mode", 1);
+    glutAddMenuEntry("Hero POV view", 2);
   glutCreateMenu(menu_callback);
+  glutAddSubMenu("Change Hero", subMenu);
+    glutAddSubMenu("Change Camera", subMenu2);
   glutAddMenuEntry("Quit", 0);
   glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
@@ -155,23 +234,38 @@ void init_scene() {
   glEnable( GL_COLOR_MATERIAL );
   glColorMaterial( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
 
-  glShadeModel(GL_FLAT);
+  glShadeModel(GL_SMOOTH);
 
   generate_env_dl();
 }
 
 int main(int argc, char** argv) {
+  float cameraTheta = M_PI / 3.0f;
+  float cameraPhi = 2.8f;
+  float cameraRadius = 300;
+
+  artoria = new Artoria(Point(0, 0, 0), Vector(0, 0, 0));
+  finjuh = new Finjuh(Point(20, 0, 20), Vector(0, 0, 0));
+  
+  // set camera to arcball initially
+  mainCamera = Camera(2, 0, 0, 0, cameraRadius, cameraTheta, cameraPhi);
+  currentHero = artoria;
+    
+  // initialize glut and make sure we have everything set up
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DEPTH | GLUT_DOUBLE | GLUT_RGBA);
   glutInitWindowPosition(100, 100);
   glutInitWindowSize(window_width, window_height);
   glutCreateWindow("Guild Wars");
 
+  // register callbacks
   glutSetKeyRepeat(GLUT_KEY_REPEAT_ON);
   glutDisplayFunc(render);
   glutReshapeFunc(resize);
   glutKeyboardFunc(normal_keys_down);
   glutKeyboardUpFunc(normal_keys_up);
+  glutMouseFunc(mouseCallback);
+  glutMotionFunc(mouseMotion);
   anim_timer(0);
   render_timer(0);
 

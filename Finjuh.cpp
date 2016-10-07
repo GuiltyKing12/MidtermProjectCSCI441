@@ -146,9 +146,9 @@ void Finjuh::drawLowerBody() {
     } glPopMatrix();
 }
 
-void Finjuh::drawFinjuh() {
+void Finjuh::drawHero() {
     glPushMatrix(); {
-        glTranslatef(posX, 12, posZ);
+        glTranslatef(position.x, 12, position.z);
         glRotatef(orientation, 0, 1 ,0);
         drawLowerBody();
         drawUpperBody();
@@ -156,8 +156,8 @@ void Finjuh::drawFinjuh() {
 		glPushMatrix(); {
 			glColor3f(.9, .9, .95);
             glTranslatef(8, 10, 0);
-            pet.drawCreature();
-            pet.drawPath(showCtrlCage, showCurve);
+            //pet.drawCreature();
+            //pet.drawPath(showCtrlCage, showCurve);
         } glPopMatrix();
     } glPopMatrix();
     
@@ -166,41 +166,41 @@ void Finjuh::drawFinjuh() {
 
 // changing the hero heading, similar to changing camera angle, but only in 2D because the hero doesn't need to change Y height
 void Finjuh::recomputeDirection() {
-    dirX = sin(orientation * M_PI / 180);
-    dirZ = cos(orientation * M_PI / 180);
+    direction.x = sin(orientation * M_PI / 180);
+    direction.z = cos(orientation * M_PI / 180);
     
-    float squares = pow(dirX, 2) + pow(dirY, 2) + pow(dirZ, 2);
+    float squares = pow(direction.x, 2) + pow(direction.y, 2) + pow(direction.z, 2);
 	float mag = pow(squares, 0.5);
     
-    dirX = .5 * dirX / mag;
-    dirZ = .5 * dirZ / mag;
+    direction.x = .5 * direction.x / mag;
+    direction.z = .5 * direction.z / mag;
 }
 
 void Finjuh::moveForward() {
-    if((posX -= dirX * .25) > 50)
-        posX = 50;
-    else if((posX -= dirX * .25) < -50)
-        posX = -50;
+    if((position.x -= direction.x * .25) > 50)
+        position.x = 50;
+    else if((position.x -= direction.x * .25) < -50)
+        position.x = -50;
     
-    if((posZ -= dirZ * .25) > 50)
-        posZ = 50;
-    else if((posZ -= dirZ * .25) < -50)
-        posZ = -50;
+    if((position.z -= direction.z * .25) > 50)
+        position.z = 50;
+    else if((position.z -= direction.z * .25) < -50)
+        position.z = -50;
     
     appAngle += appMovmtSpd;
     if(appAngle == 60 || appAngle == -60) appMovmtSpd = -appMovmtSpd;
 }
 
 void Finjuh::moveBackward() {
-    if((posX += dirX * .25) > 50)
-        posX = 50;
-    else if((posX += dirX * .25) < -50)
-        posX = -50;
+    if((position.x += direction.x * .25) > 50)
+        position.x = 50;
+    else if((position.x += direction.x * .25) < -50)
+        position.x = -50;
     
-    if((posZ += dirZ * .25) > 50)
-        posZ = 50;
-    else if((posZ += dirZ * .25) < -50)
-        posZ = -50;
+    if((position.z += direction.z * .25) > 50)
+        position.z = 50;
+    else if((position.z += direction.z * .25) < -50)
+        position.z = -50;
     
     appAngle -= appMovmtSpd;
     if(appAngle == 60 || appAngle == -60) appMovmtSpd = -appMovmtSpd;
