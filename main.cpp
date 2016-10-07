@@ -18,6 +18,7 @@
 #include <string>
 #include "terrain.h"
 #include "camera.h"
+#include "point.h"
 
 // Constants.
 
@@ -37,6 +38,8 @@ Terrain t;
 
 bool keys_down[4] = {false, false, false, false};
 int a = 0;
+float x = 1.0;
+float z = 1.0;
 
 // Environment setup functions.
 
@@ -78,6 +81,13 @@ void render() {
             0, 1, 0);
 
   glCallList(envDL);
+
+  Point p = t.bez_patch(x, z);
+  glPushMatrix();
+  glTranslatef(p.x, p.y, p.z);
+    glColor3f(0, 1, 0);
+    glutSolidSphere(3, 50, 50);
+  glPopMatrix();
 
   glutSwapBuffers();
 }
