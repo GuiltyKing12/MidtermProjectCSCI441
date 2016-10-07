@@ -106,6 +106,26 @@ Point Terrain::bez_patch(float x, float z) {
       control_points[oz][ox][3][2], control_points[oz][ox][3][3]));
 }
 
+Vector Terrain::normal(float x, float z) {
+  float offset = 0.1;
+
+  Point here = bez_patch(x, z);
+  Point off_x, off_z;
+  if (x + offset <= 2.0 && z + offset <= 2.0) {
+    off_x = bez_patch(x + offset, z);
+    off_z = bez_patch(x, z + offset);
+  } else {
+    off_x = bez_patch(x - offset, z);
+    off_z = bez_patch(x, z - offset);
+  }
+
+  Vector v1 = off_x - here;
+  Vector v2 = off_z - here;
+
+  Vector n = v1.Cross(v2);
+  return n / n.magnitude();
+}
+
 Point Terrain::bez_curve(float t, Point p0, Point p1, Point p2, Point p3) {
   float t2 = t * t;
   float t3 = t2 * t;
