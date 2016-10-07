@@ -20,10 +20,14 @@ class Vector {
     Vector operator+(Vector v) {
         return Vector(x + v.x, y + v.y, z + v.z);
     }
-    
-    Point operator+(Point p) {
-        return Point(x + p.x, y + p.y, z + p.z);
+
+    Vector operator/(float f) {
+      return Vector(x / f, y / f, z / f);
     }
+    
+    // Point operator+(Point p) {
+    //     return Point(x + p.x, y + p.y, z + p.z);
+    // }
     
     float magnitude() {
         return sqrt(x * x + y * y + z * z);

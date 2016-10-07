@@ -15,6 +15,7 @@
 #include <fstream>
 #include <string>
 #include "point.h"
+#include "vector.h"
 
 class Terrain {
   public:
@@ -24,6 +25,9 @@ class Terrain {
     void draw();
     
     Point bez_patch(float x, float z);
+    Vector normal(float x, float z);
+
+    int get_side_length() { return side_length; }
 
   private:
     int side_length;

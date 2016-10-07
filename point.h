@@ -1,6 +1,8 @@
 #ifndef POINT_H
 #define POINT_H
 
+#include "vector.h"
+
 class Point {
   public:
     float x, y, z;
@@ -19,6 +21,10 @@ class Point {
 
     Point operator+(Point o) {
       return Point(x + o.x, y + o.y, z + o.z);
+    }
+
+    Vector operator-(Point o) {
+      return Vector(x - o.x, y - o.y, z - o.z);
     }
 };
 
