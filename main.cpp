@@ -21,6 +21,7 @@
 #include "point.h"
 #include "Artoria.h"
 #include "Finjuh.h"
+#include "track.h"
 
 // Constants.
 
@@ -39,6 +40,7 @@ GLint leftMouseButton;                      // status of the mouse buttons
 int mouseX = 0, mouseY = 0;                 // last known X and Y of the mouse
 
 Terrain t("terrain_pts_2.csv");
+Track tr;
 
 // Camera
 Camera mainCamera;
