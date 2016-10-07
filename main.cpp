@@ -66,6 +66,7 @@ void generate_env_dl() {
   glNewList(envDL, GL_COMPILE);
     glPushMatrix();
       t.draw();
+      tr.draw();
     glPopMatrix();
   glEndList();
 }

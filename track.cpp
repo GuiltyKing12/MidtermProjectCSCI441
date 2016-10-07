@@ -12,7 +12,13 @@ void Track::draw() {
   int res = 100;
 
   glPushMatrix();
-    //
+    glColor3f(1, 1, 0);
+    glBegin(GL_LINES);
+      for (int t = 0; t < segments * res; t += 1) {
+        vertex(get_point((float)t / res));
+        vertex(get_point((float)(t + 1) / res));
+      }
+    glEnd();
   glPopMatrix();
 }
 
