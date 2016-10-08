@@ -1,6 +1,7 @@
 #pragma once
 #include "point.h"
 #include "vector.h"
+#include <iostream>
 
 class Camera {
   public:

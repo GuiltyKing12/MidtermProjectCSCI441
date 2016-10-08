@@ -1,58 +1,15 @@
 #include "Wb.h"
 
 Wb::Wb() {
-  x = 0;
-  z = 0;
-  heading = 0;
-  dx = 0;
-  dz = 0.1;
-  count = 0;
-  count_dir = true;
-  calculate_direction();
 }
 
-Wb::Wb(float** t, std::string pet_path_fn) {
-  x = 0;
-  z = 0;
-  heading = 0;
-  dx = 0;
-  dz = 0.1;
+Wb::Wb(Point p, Vector d, std::string pet_path_fn) {
+  position = p;
+  direction = d;
   count = 0;
   count_dir = true;
-  terrain = t;
-  calculate_direction();
   load_pet_path_pts(pet_path_fn);
   calculate_pet_path_coefficients();
-}
-
-void Wb::move(bool w_down, bool s_down, bool a_down, bool d_down, float x_min, float x_max, float z_min, float z_max) {
-  if (w_down) {
-    x += dx;
-    z += dz;
-  }
-  if (s_down) {
-    x -= dx;
-    z -= dz;
-  }
-  if (a_down) {
-    heading += 0.2;
-    calculate_direction();
-  }
-  if (d_down) {
-    heading -= 0.2;
-    calculate_direction();
-  }
-
-  if (x < x_min) {
-    x = x_min;
-  } else if (x > x_max - 1) {
-    x = x_max - 1;
-  }
-  if (z < z_min) {
-    z = z_min;
-  } else if (z > z_max - 1) {
-    z = z_max - 1;
-  }
 }
 
 void Wb::anim() {
@@ -88,25 +45,6 @@ void Wb::anim() {
   if (pet_t >= (bez_pts.size() - 1) / 3) {
     pet_t = 0.0;
   }
-}
-
-void Wb::calculate_direction() {
-  float speed = 0.3;
-  dx = speed * sin(heading);
-  dz = speed * cos(heading);
-}
-
-float Wb::get_y() {
-  int x_i = x;
-  int z_i = z;
-  float left = x - x_i;
-  float top = z - z_i;
-
-  // I have no idea why these have to be backwards but it works!
-  float top_lerp = (1.0 - left) * terrain[z_i][x_i] + left * terrain[z_i][x_i + 1];
-  float bot_lerp = (1.0 - left) * terrain[z_i + 1][x_i] + left * terrain[z_i + 1][x_i + 1];
-
-  return (1.0 - top) * top_lerp + top * bot_lerp;
 }
 
 void Wb::load_pet_path_pts(std::string fn) {
@@ -171,14 +109,21 @@ Point Wb::get_pet_path_pt(float t) {
   return p;
 }
 
-void Wb::draw(bool key_down, bool control_cage, bool curve) {
+void Wb::draw(bool key_down) {
   float arm_angle = 30;
   if (key_down) {
     arm_angle = 30 + count * 4;
   }
+
+  Vector up(0, 1, 0);
+  Vector axis = up.Cross(direction);
+  float angle = up.Dot(direction);
+
   glPushMatrix();
-  glTranslatef(x, get_y() + 0.5 + (float)count / 15.0, z);
-  glScalef(0.5, 0.5, 0.5);
+  glTranslatef(0, (float)count / 15.0 + 20, 0);
+  glTranslatef(position.x, position.y, position.z);
+  glScalef(5, 5, 5);
+  glRotatef(-angle * 180.0 / 3.14159, axis.x, axis.y, axis.z);
   glRotatef(heading * 180.0 / 3.14159, 0, 1, 0);
     draw_body();
 
@@ -202,43 +147,6 @@ void Wb::draw(bool key_down, bool control_cage, bool curve) {
     draw_wing(20 + count);
     draw_wing(-20 - count);
     
-    if (control_cage) {
-      for (size_t i = 0; i < bez_pts.size(); i += 1) {
-        glPushMatrix();
-        glTranslatef(bez_pts[i].x, bez_pts[i].y, bez_pts[i].z);
-          glColor3f(0, 1, 0);
-          glutSolidSphere(0.2, 20, 20);
-        glPopMatrix();
-      }
-
-      glDisable(GL_LIGHTING);
-      glPushMatrix();
-        glColor3f(1, 1, 0);
-        glLineWidth(1);
-        glBegin(GL_LINE_STRIP);
-          for (size_t i = 0; i < bez_pts.size(); i += 1) {
-            glVertex3f(bez_pts[i].x, bez_pts[i].y, bez_pts[i].z);
-          }
-        glEnd();
-      glPopMatrix();
-      glEnable(GL_LIGHTING);
-    }
-
-    if (curve) {
-      glDisable(GL_LIGHTING);
-      glPushMatrix();
-        glColor3f(0, 1, 1);
-        glLineWidth(3);
-        glBegin(GL_LINE_STRIP);
-          for (float t = 0; t < (bez_pts.size() - 1) / 3; t += 0.01) {
-            Point f = get_pet_path_pt(t);
-            glVertex3f(f.x, f.y, f.z);
-          }
-        glEnd();
-      glPopMatrix();
-      glEnable(GL_LIGHTING);
-    }
-
     Point pf = get_pet_path_pt(pet_t);
     glPushMatrix();
     glTranslatef(pf.x, pf.y, pf.z);

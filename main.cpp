@@ -21,6 +21,7 @@
 #include "point.h"
 #include "Artoria.h"
 #include "Finjuh.h"
+#include "Wb.h"
 #include "track.h"
 
 // Constants.
@@ -51,10 +52,12 @@ Hero* currentHero;
 
 Artoria* artoria;
 Finjuh* finjuh;
+Wb* wb;
 
 bool keys_down[4] = {false, false, false, false};
 float wh_x = 1.0;
 float wh_z = 1.0;
+float wh_h = 0.0;
 bool keys[256];
 int a = 0;
 
@@ -92,36 +95,20 @@ void render() {
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-  float x = 200 * cos((float)a / 180 * 3.14159);
-  float z = 200 * sin((float)a / 180 * 3.14159);
-  mainCamera.look(currentHero->position);
-
-  // Here is the wandering hero drawing code. I think the final
-  // code should look more like this once the Hero class is done:
-  // Point p = t.bez_patch(...
-  // Vector n = t.normal(...
-  // wb.set_location(p);
-  // wb.set_normal(n);
-  // ... and the rest of this math would be done within the Hero.
   Point p = t.bez_patch(wh_x, wh_z);
   Vector n = t.normal(wh_x, wh_z) * 15;
-  Vector y(0, 1, 0);
-  Vector axis = n.Cross(y);
-  float angle = n.Dot(y) / 3.14159 * 180;
-  glPushMatrix();
-  glTranslatef(p.x, p.y, p.z);
-  glRotatef(angle, axis.x, axis.y, axis.z);
-  glTranslatef(0, 8, 0);
-  glScalef(4, 16, 4);
-    glColor3f(0, 1, 1);
-    glutSolidCube(1);
-  glPopMatrix();
+  wb->position = p;
+  wb->direction = n;
+  wb->heading = wh_h;
+
+  mainCamera.look(currentHero->position);
 
   // Draw the terrain.
   glCallList(envDL);
 
   artoria->drawHero();
   finjuh->drawHero();
+  wb->draw(keys_down[W] || keys_down[A] || keys_down[S] || keys_down[D]);
   artoria->moveHeroForward();
   artoria->recomputeHeroDirection();
     
@@ -195,16 +182,18 @@ void normal_keys_up(unsigned char key, int x, int y) {
 void check_keys() {
   float speed = 0.03;
   if (keys_down[W]) {
-    wh_z -= speed;
+    wh_x += speed * sin(wh_h);
+    wh_z += speed * cos(wh_h);
   }
   if (keys_down[S]) {
-    wh_z += speed;
+    wh_x -= speed * sin(wh_h);
+    wh_z -= speed * cos(wh_h);
   }
   if (keys_down[A]) {
-    wh_x -= speed;
+    wh_h += 0.1;
   }
   if (keys_down[D]) {
-    wh_x += speed;
+    wh_h -= 0.1;
   }
 
   if (wh_x < 0) {
@@ -237,8 +226,9 @@ void menu_callback(int option) {
 }
 
 void subMenu_callback(int option) {
-    if (option == 0) currentHero = artoria;
-    else if (option == 1) currentHero = finjuh;
+  if (option == 0) currentHero = artoria;
+  else if (option == 1) currentHero = finjuh;
+  else if (option == 2) currentHero = wb;
 }
 
 void subMenu2_callback(int option) {
@@ -258,6 +248,7 @@ void render_timer(int value) {
 void anim_timer(int value) {
   // Do animation stuff here
   artoria->shakeTail();
+  wb->anim();
   glutTimerFunc(1000.0 / 10.0, anim_timer, 0);
 }
 
@@ -267,7 +258,7 @@ void create_menu() {
   int subMenu = glutCreateMenu(subMenu_callback);
   glutAddMenuEntry("Artoria", 0);
   glutAddMenuEntry("Finjuh", 1);
-  glutAddMenuEntry("WB", 2);
+  glutAddMenuEntry("Wb", 2);
   int subMenu2 = glutCreateMenu(subMenu2_callback);
     glutAddMenuEntry("Free Cam Mode", 0);
     glutAddMenuEntry("Arcball Cam Mode", 1);
@@ -307,6 +298,7 @@ int main(int argc, char** argv) {
   // draw the heroes
   artoria = new Artoria(Point(0, 0, 0), Vector(0, 0, 0));
   finjuh = new Finjuh(Point(20, 0, 20), Vector(0, 0, 0));
+  wb = new Wb(Point(0, 20, 0), Vector(0, 1, 0), "bez_pts.csv");
   
   // set camera to arcball initially
   mainCamera = Camera(2, 0, 0, 0, cameraRadius, cameraTheta, cameraPhi);
