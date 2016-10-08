@@ -120,11 +120,12 @@ void Wb::draw(bool key_down) {
   float angle = up.Dot(direction);
 
   glPushMatrix();
-  glTranslatef(0, (float)count / 15.0 + 20, 0);
+  glTranslatef(0, (float)count / 15.0, 0);
   glTranslatef(position.x, position.y, position.z);
   glScalef(5, 5, 5);
   glRotatef(-angle * 180.0 / 3.14159, axis.x, axis.y, axis.z);
   glRotatef(heading * 180.0 / 3.14159, 0, 1, 0);
+  glTranslatef(0, 3, 0);
     draw_body();
 
     draw_legs(-25);
