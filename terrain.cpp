@@ -56,8 +56,7 @@ void Terrain::load_points(std::string fn) {
     }
   }
 
-  int index = 0;
-  while (infile) {
+  for (int i = 0; i < side_length * side_length * 16; i += 1) {
     if (!getline(infile, line)) {
       break;
     }
@@ -67,11 +66,12 @@ void Terrain::load_points(std::string fn) {
     float z = atof(line.substr(line.find_last_of(',') + 1).c_str());
 
     Point p(x, y, z);
-    int inner_index = index % 16;
-    int outer_index = index / 16;
+    int inner_index = i % 16;
+    int outer_index = i / 16;
     control_points[outer_index / side_length][outer_index % side_length][inner_index / 4][inner_index % 4] = p;
-    index += 1;
   }
+
+  infile.close();
 }
 
 void Terrain::vertex(Point p) {

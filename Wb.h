@@ -11,36 +11,21 @@
 #include <fstream>
 
 #include "hero.h"
+#include "point.h"
+#include "vector.h"
 
-struct Point {
-  float x;
-  float y;
-  float z;
-};
-
-class Wb {
+class Wb : public Hero {
   public:
     Wb();
-    Wb(float** t, std::string pet_path_fn);
+    Wb(Point p, Vector d, std::string pet_path_fn);
 
-    void draw(bool key_down, bool control_cage, bool curve);
+    float heading;
+
+    void draw(bool key_down);
     void move(bool w_down, bool s_down, bool a_down, bool d_down, float x_min, float x_max, float z_min, float z_max);
-    float get_y();
     void anim();
 
-    float get_x() { return x; }
-    float get_z() { return z; }
-    float get_heading() { return heading; }
-    float get_dx() { return dx; }
-    float get_dz() { return dz; }
-    void set_x(float nx) { x = nx; }
-    void set_z(float nz) { z = nz; }
-    void set_heading(float nh) { heading = nh; calculate_direction(); }
-
   private:
-    float** terrain;
-    float x, z, heading;
-    float dx, dz;
     float pet_t;
     int count;
     float p_count;
@@ -51,7 +36,6 @@ class Wb {
     std::vector<Point> cs;
     std::vector<Point> ds;
 
-    void calculate_direction();
     void load_pet_path_pts(std::string fn);
     void calculate_pet_path_coefficients();
     Point get_pet_path_pt(float t);
