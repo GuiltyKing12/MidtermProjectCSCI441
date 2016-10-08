@@ -36,7 +36,7 @@ public:
 	}
 
 public:
-	virtual void drawHero() override;
+	void drawHero();
 	void drawUpperBody();
 	void drawLowerBody();
 	void drawHead();

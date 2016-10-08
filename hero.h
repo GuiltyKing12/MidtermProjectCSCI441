@@ -7,5 +7,5 @@ class Hero {
     Point position;
     Vector direction;
     virtual ~Hero() {};
-    virtual void drawHero() = 0;
+    //virtual void drawHero() = 0;
 };

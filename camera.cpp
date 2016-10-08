@@ -9,27 +9,29 @@
 #endif
 
 #include "camera.h"
-
 #include <math.h>
 
+/** MODE 1 - Free cam control **/
 void Camera::moveForward() {
     if(mode == 1) {
-        position = camDir * 2 + position;
+        position = Point(camDir.x * 2+position.x, camDir.y * 2+position.y, camDir.z * 2+position.z);
         recomputeOrientation();
     }
 }
 
 void Camera::moveBackward() {
     if(mode == 1) {
-        position = camDir * -2 + position;
+        position = Point(camDir.x * -2-position.x, camDir.y * -2-position.y, camDir.z * -2-position.z);
         recomputeOrientation();
     }
 }
 
+/** MODE 2 - ARCball controls **/
 void Camera::zoom(float radiusChange) {
     if(mode == 2) camRadius += radiusChange;
 }
 
+/** General movement control for both Modes **/
 void Camera::revolve(float theta, float phi) {
     
         camTheta += theta;
@@ -45,13 +47,18 @@ void Camera::revolve(float theta, float phi) {
 void Camera::switchMode(int setMode) {
     mode = setMode;
     if(setMode == 1) {
-        camDir = Vector(lastLook.x + -position.x , lastLook.y + -position.y, lastLook.z + -position.z);
         position =  Point(-camDir.x * sinf(camTheta) * sin(camPhi) + 100, -camDir.y * -cosf(camPhi) + 100, -camDir.z * -cosf(camTheta) * sinf(camPhi) + 100);
         camPhi = M_PI / 3.0f;
-        camTheta = 2.8f;
+        camTheta = -1.0f;
+    }
+    else if(setMode == 2) {
+        camTheta = M_PI / 3.0f;
+        camPhi = 2.8f;
     }
     recomputeOrientation();
 }
+
+/** Functions to control the orientation and where to look **/
 
 void Camera::recomputeOrientation() {
     camDir.x = sinf(camTheta) * sin(camPhi);
@@ -75,8 +82,7 @@ void Camera::look(Point look) {
         case 2 :
             Vector currentDir = camDir * camRadius;
             lastLook = look;
-            Point arcPosition = currentDir + look;
-            //position = currentDir + look;
+            Point arcPosition = Point(currentDir.x+look.x, currentDir.y+look.y, currentDir.z+look.z);
             gluLookAt(arcPosition.x, arcPosition.y, arcPosition.z,
                       look.x, look.y, look.z,
                       0, 1, 0);

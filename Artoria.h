@@ -73,7 +73,7 @@ public:
     void drawLowerBody();
     
     /*** MAIN DRAW HERO ***/
-    virtual void drawHero() override;
+    void drawHero();
     
 // do stuff functions for hero
 public:

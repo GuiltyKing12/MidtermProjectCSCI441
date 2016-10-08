@@ -51,20 +51,11 @@ Artoria* artoria;
 Finjuh* finjuh;
 
 bool keys_down[4] = {false, false, false, false};
-<<<<<<< HEAD
 float wh_x = 1.0;
 float wh_z = 1.0;
-=======
 bool keys[256];
 int a = 0;
->>>>>>> heroclass
 
-// keyboard actions
-void keyboardActions() {
-    if(keys['i'] || keys['I']) mainCamera.moveForward();
-    else if(keys['k'] || keys['K']) mainCamera.moveBackward();
-    glutPostRedisplay();
-}
 // Environment setup functions.
 
 void generate_env_dl() {
@@ -91,7 +82,6 @@ void resize(int w, int h) {
 }
 
 void render() {
-    keyboardActions();
   glDrawBuffer(GL_BACK);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -99,15 +89,9 @@ void render() {
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
-<<<<<<< HEAD
-  gluLookAt(0, 200, 200,
-            0, 0, 0,
-            0, 1, 0);
-=======
   float x = 200 * cos((float)a / 180 * 3.14159);
   float z = 200 * sin((float)a / 180 * 3.14159);
   mainCamera.look(currentHero->position);
->>>>>>> heroclass
 
   // Here is the wandering hero drawing code. I think the final
   // code should look more like this once the Hero class is done:
@@ -231,6 +215,16 @@ void check_keys() {
   } else if (wh_z > t.get_side_length()) {
     wh_z = t.get_side_length();
   }
+    
+    if(keys['i'] || keys['I']) {
+        mainCamera.moveForward();
+        glutPostRedisplay();
+    }
+    else if(keys['k'] || keys['K']) {
+        mainCamera.moveBackward();
+        glutPostRedisplay();
+    }
+ 
 }
 
 void menu_callback(int option) {
@@ -260,7 +254,7 @@ void render_timer(int value) {
 
 void anim_timer(int value) {
   // Do animation stuff here
-
+  artoria->shakeTail();
   glutTimerFunc(1000.0 / 10.0, anim_timer, 0);
 }
 
@@ -307,6 +301,7 @@ int main(int argc, char** argv) {
   float cameraPhi = 2.8f;
   float cameraRadius = 300;
 
+  // draw the heroes
   artoria = new Artoria(Point(0, 0, 0), Vector(0, 0, 0));
   finjuh = new Finjuh(Point(20, 0, 20), Vector(0, 0, 0));
   
