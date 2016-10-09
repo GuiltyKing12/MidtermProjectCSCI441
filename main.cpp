@@ -17,12 +17,15 @@
 #include <vector>
 #include <string>
 #include "terrain.h"
+#include "objects.h"
 #include "camera.h"
 #include "point.h"
 #include "Artoria.h"
 #include "Finjuh.h"
 #include "Wb.h"
 #include "track.h"
+
+using namespace std;
 
 // Constants.
 
@@ -40,7 +43,13 @@ GLuint envDL;
 GLint leftMouseButton;                      // status of the mouse buttons
 int mouseX = 0, mouseY = 0;                 // last known X and Y of the mouse
 
-Terrain t("terrain_pts_2.csv");
+// Files to read from
+string terrain_points;
+string bezier_points;
+string objects;
+
+Terrain t;
+Objects o;
 Track tr;
 
 // Camera
@@ -69,6 +78,7 @@ void generate_env_dl() {
   glNewList(envDL, GL_COMPILE);
     glPushMatrix();
       t.draw();
+	  o.load_and_draw();
       tr.draw();
     glPopMatrix();
   glEndList();
@@ -136,7 +146,7 @@ void mouseMotion(int x, int y) {
     if(leftMouseButton == 100) {
         mainCamera.zoom((x - mouseX));
     }
-    // change positon of the camera
+    // change position of the camera
     if(leftMouseButton == GLUT_DOWN) {
         float theta = ((x - mouseX) * .005);
         float phi = ((mouseY - y) * .005);
@@ -254,6 +264,30 @@ void anim_timer(int value) {
 
 // Misc setup functions.
 
+bool loadInputFiles( char* file ) {
+  ifstream fin;
+  fin.open(file);
+  if(!fin) return false;
+
+  string temp;
+  
+  fin >> temp;
+  terrain_points = temp.c_str();
+  //fprintf(stdout, "Terrain Points File: %s\n", terrain_points);
+  t = Terrain(terrain_points);
+  
+  fin >> temp;
+  bezier_points = temp.c_str();
+  //fprintf(stdout, "Bezier Points File: %s\n", bezier_points);
+  
+  fin >> temp;
+  objects = temp.c_str();
+  //fprintf(stdout, "Objects File: %s\n", objects);
+  
+  fin.close();
+  return true;
+}
+
 void create_menu() {
   int subMenu = glutCreateMenu(subMenu_callback);
   glutAddMenuEntry("Artoria", 0);
@@ -291,6 +325,22 @@ void init_scene() {
 }
 
 int main(int argc, char** argv) {
+  if(argc == 1) {
+    fprintf(stdout, "Please enter a filename as an argument.\n");
+    return(1);
+  }
+    
+  // Checks if the file could be read, if not alert user and exit with error
+  if(loadInputFiles(argv[1])) {
+    fprintf(stdout, "Successfully loaded input files.\n");
+	fprintf(stdout, "\n");
+  }
+  else {
+    fprintf(stdout, "Could not load input files. Please check input.\n");
+	fprintf(stdout, "\n");
+    return(1);
+  }
+
   float cameraTheta = M_PI / 3.0f;
   float cameraPhi = 2.8f;
   float cameraRadius = 300;
@@ -298,7 +348,7 @@ int main(int argc, char** argv) {
   // draw the heroes
   artoria = new Artoria(Point(0, 0, 0), Vector(0, 0, 0));
   finjuh = new Finjuh(Point(20, 0, 20), Vector(0, 0, 0));
-  wb = new Wb(Point(0, 20, 0), Vector(0, 1, 0), "bez_pts.csv");
+  wb = new Wb(Point(0, 20, 0), Vector(0, 1, 0), bezier_points);
   
   // set camera to arcball initially
   mainCamera = Camera(2, 0, 0, 0, cameraRadius, cameraTheta, cameraPhi);
