@@ -3,6 +3,7 @@
 #include "point.h"
 #include "vector.h"
 #include "hero.h"
+#include <string.h>
 
 // is the main hero drawing class
 class Artoria : public Hero {
@@ -16,7 +17,7 @@ public:
     float armAngle, armAngle2;
     int legDirection, tailAngle, tailDirection;
     bool toArms, lunyPath, showCtrlPts, showCurve;
-    
+    char *name = "Artoria";
     // her pet we attach to her
     Luny luny;
     
@@ -38,17 +39,19 @@ public:
 		legDirection = 2;
 		tailAngle = 0;
 		tailDirection = 2;
-		toArms = false;
+		toArms = true;
         lunyPath = true;
         showCtrlPts = true;
         showCurve = true;
-        
+        recomputeHeroDirection();
         // give Luny her path -> all the control points
         //luny = Luny(path);
     }
 
 // all the drawing functions
 public:
+    void drawName();
+    
     void drawSpear();
 
     void drawTail();

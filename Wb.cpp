@@ -4,6 +4,7 @@ Wb::Wb() {
 }
 
 Wb::Wb(Point p, Vector d, std::string pet_path_fn) {
+  name = "Wb";
   position = p;
   direction = d;
   count = 0;
@@ -107,6 +108,17 @@ Point Wb::get_pet_path_pt(float t) {
   p.y = t3 * as[ai].y + t2 * bs[ai].y + t * cs[ai].y + ds[ai].y;
   p.z = t3 * as[ai].z + t2 * bs[ai].z + t * cs[ai].z + ds[ai].z;
   return p;
+}
+
+void Wb::draw_name() {
+  char* c;
+  glPushMatrix(); {
+      glColor3f(1, 1, 1);
+      glScalef(.01, .01, .01);
+      for(c = name; *c != '\0'; c++) {
+          glutStrokeCharacter(GLUT_STROKE_ROMAN , *c);
+      }
+  } glPopMatrix();
 }
 
 void Wb::draw(bool key_down) {
@@ -217,6 +229,11 @@ void Wb::draw_head() {
     glRotatef(-90, 1, 0, 0);
       glColor3f(0.8, 0.2, 0.1);
       glutSolidCone(0.7, 0.7, 50, 1);
+    glPopMatrix();
+    
+    glPushMatrix();
+    glTranslatef(-.3, 1, 0);
+    draw_name();
     glPopMatrix();
   glPopMatrix();
 }

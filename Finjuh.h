@@ -7,6 +7,7 @@
 
 #include <vector>
 #include <math.h>
+#include <string.h>
 
 class Finjuh : public Hero {
 public:
@@ -16,6 +17,7 @@ public:
 	int appMovmtSpd; // sets how much the hero's appendages change when moving
 	bool showCtrlCage, showCurve;
 
+    char *name = "Finjuh";
 	//Creature pet;
 
 public:
@@ -36,6 +38,7 @@ public:
 	}
 
 public:
+    void drawName();
 	void drawHero();
 	void drawUpperBody();
 	void drawLowerBody();

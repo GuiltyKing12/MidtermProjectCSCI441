@@ -13,6 +13,18 @@
 using namespace std;
 
 // Functions used when drawing hero
+void Finjuh::drawName() {
+    char* c;
+    glPushMatrix(); {
+        glColor3f(1, 1, 1);
+        glScalef(.08, .05, .08);
+        glRotatef(180, 0, 1, 0);
+        for(c = name; *c != '\0'; c++) {
+            glutStrokeCharacter(GLUT_STROKE_ROMAN , *c);
+        }
+    } glPopMatrix();
+}
+
 void Finjuh::drawHead() {
 	glColor3f(.83, .42, .13);
 	// draws head and beard
@@ -58,6 +70,12 @@ void Finjuh::drawHead() {
 			glRotatef(-150, 1, 0, 0);
 			glutSolidCone(1, 5, 23, 23);
 		} glPopMatrix();
+        
+        // draws name
+        glPushMatrix(); {
+            glTranslatef(10, 5, 0);
+            drawName();
+        } glPopMatrix();
     } glPopMatrix();
 }
 

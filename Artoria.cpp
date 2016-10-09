@@ -10,6 +10,18 @@
 #include <GL/glu.h>
 #endif
 
+void Artoria::drawName() {
+    char* c;
+    glPushMatrix(); {
+        glColor3f(1, 1, 1);
+        glScalef(.08, .05, .08);
+        glRotatef(180, 0, 1, 0);
+        for(c = name; *c != '\0'; c++) {
+            glutStrokeCharacter(GLUT_STROKE_ROMAN , *c);
+        }
+    } glPopMatrix();
+}
+
 void Artoria::drawSpear() {
     glPushMatrix(); {
         glColor3f(.65, .8, .9);
@@ -212,6 +224,8 @@ void Artoria::drawTorso() {
     glPushMatrix(); {
         glTranslatef(0, 16, 0);
         drawHead();
+        glTranslatef(15, 5, 0);
+        drawName();
     } glPopMatrix();
 }
 

@@ -19,6 +19,7 @@
 #include "hero.h"
 #include "point.h"
 #include "vector.h"
+#include <string.h>
 
 class Wb : public Hero {
   public:
@@ -32,6 +33,7 @@ class Wb : public Hero {
     void anim();
 
   private:
+    char *name;
     float pet_t;
     int count;
     float p_count;
@@ -45,6 +47,7 @@ class Wb : public Hero {
     void load_pet_path_pts(std::string fn);
     void calculate_pet_path_coefficients();
     Point get_pet_path_pt(float t);
+    void draw_name();
     void draw_body();
     void draw_legs(float angle);
     void draw_leg();
