@@ -22,7 +22,7 @@
 ########################################
 
 TARGET = guildWars
-OBJECTS = main.o terrain.o camera.o Artoria.o Finjuh.o Wb.o track.o
+OBJECTS = main.o terrain.o objects.o camera.o Artoria.o Finjuh.o Wb.o track.o
 
 LOCAL_INC_PATH = /Users/jpaone/Desktop/include
 LOCAL_LIB_PATH = /Users/jpaone/Desktop/lib
