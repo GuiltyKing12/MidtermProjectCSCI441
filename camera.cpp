@@ -21,7 +21,7 @@ void Camera::moveForward() {
 
 void Camera::moveBackward() {
     if(mode == 1) {
-        position = Point(camDir.x * -2-position.x, camDir.y * -2-position.y, camDir.z * -2-position.z);
+        position = Point(camDir.x * -2+position.x, camDir.y * -2+position.y, camDir.z * -2+position.z);
         recomputeOrientation();
     }
 }
@@ -88,4 +88,10 @@ void Camera::look(Point look) {
                       0, 1, 0);
             break;
     }
+}
+
+void Camera::fpvLook(Point heroPos, Vector heroDir) {
+    gluLookAt(heroPos.x, heroPos.y+20, heroPos.z-20,
+              heroDir.x+heroPos.x, heroDir.y+heroPos.y, heroDir.z+heroPos.z,
+              0, 1, 0);
 }

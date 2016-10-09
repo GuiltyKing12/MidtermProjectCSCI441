@@ -14,7 +14,7 @@ class Camera {
     
   // consturctors for camera
   public:
-    Camera() {}
+    Camera() { mode = 3;}
     
     Camera(int setMode, float posX, float posY, float posZ,
                         float cameraRadius, float cameraTheta, float cameraPhi) {
@@ -47,4 +47,5 @@ class Camera {
     
     void recomputeOrientation();
     void look(Point look);
+    void fpvLook(Point heroPos, Vector heroDir);
 };

@@ -43,12 +43,15 @@ int mouseX = 0, mouseY = 0;                 // last known X and Y of the mouse
 Terrain t("terrain_pts_2.csv");
 Track tr;
 
+bool fpvMode = false;
+
 // Camera
 Camera mainCamera;
 Camera fpvCamera;
 
 // Heroes
 Hero* currentHero;
+Hero* fpvHero;
 
 Artoria* artoria;
 Finjuh* finjuh;
@@ -87,31 +90,68 @@ void resize(int w, int h) {
   gluPerspective(45.0, (float) w / h, 0.1, 100000);
 }
 
+void drawScene() {
+    // Draw the terrain.
+    glCallList(envDL);
+    
+    artoria->drawHero();
+    finjuh->drawHero();
+    wb->draw(keys_down[W] || keys_down[A] || keys_down[S] || keys_down[D]);
+    artoria->moveHeroForward();
+    artoria->recomputeHeroDirection();
+}
+
+void scissorScene(size_t w, size_t h) {
+    glScissor(0, 0, w, h);
+    glViewport(0, 0, w, h);
+}
+
 void render() {
+  // drawing on back buffer -> clear color and depth ot draw
   glDrawBuffer(GL_BACK);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-  glViewport(0, 0, window_width, window_height);
+  glEnable(GL_SCISSOR_TEST);
+    
+  // we scissor and set the viewport for main scene to be whole window
+  scissorScene(window_width, window_height);
+    
+  // set up the projection and modelview matrices
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  gluPerspective(45.0, (float) window_width / window_height, 0.1, 100000);
+    
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
 
+  // get the current location of the wandering hero on the terrain
   Point p = t.bez_patch(wh_x, wh_z);
   Vector n = t.normal(wh_x, wh_z) * 15;
   wb->position = p;
   wb->direction = n;
   wb->heading = wh_h;
 
+  // set the camera to look, if free cam we look in its direction
+  // else we are in arcball looking at the current hero
   mainCamera.look(currentHero->position);
-
-  // Draw the terrain.
-  glCallList(envDL);
-
-  artoria->drawHero();
-  finjuh->drawHero();
-  wb->draw(keys_down[W] || keys_down[A] || keys_down[S] || keys_down[D]);
-  artoria->moveHeroForward();
-  artoria->recomputeHeroDirection();
+  
+  // draws main scene first time
+  drawScene();
     
+  // if fpv camera on we then repeat above process for a second view
+  if(fpvMode) {
+      scissorScene(window_width / 4, window_height / 4);
+      glDisable(GL_SCISSOR_TEST);
+    
+      glMatrixMode(GL_PROJECTION);
+      glLoadIdentity();
+      gluPerspective(45.0, (float) window_width / window_height, 0.1, 100000);
+    
+      glMatrixMode(GL_MODELVIEW);
+      glLoadIdentity();
+      fpvCamera.fpvLook(fpvHero->position, fpvHero->direction);
+    
+      drawScene();
+  }
   glutSwapBuffers();
 }
 
@@ -225,15 +265,23 @@ void menu_callback(int option) {
   }
 }
 
-void subMenu_callback(int option) {
+void subMenu_arcballHero_callback(int option) {
   if (option == 0) currentHero = artoria;
   else if (option == 1) currentHero = finjuh;
   else if (option == 2) currentHero = wb;
 }
 
-void subMenu2_callback(int option) {
+void subMenu_fpvHero_callback(int option) {
+    if (option == 0) fpvHero = artoria;
+    else if (option == 1) fpvHero = finjuh;
+    else if (option == 2) fpvHero = wb;
+}
+
+void subMenu_cameraType_callback(int option) {
     if (option == 0) mainCamera.switchMode(1);
-    else if (option == 1) mainCamera.switchMode(2);
+    else if(option == 1) mainCamera.switchMode(2);
+    else if(option == 2) fpvMode = !fpvMode;
+    
 }
 
 // Timer functions.
@@ -255,17 +303,22 @@ void anim_timer(int value) {
 // Misc setup functions.
 
 void create_menu() {
-  int subMenu = glutCreateMenu(subMenu_callback);
+  int arcballHeroes = glutCreateMenu(subMenu_arcballHero_callback);
   glutAddMenuEntry("Artoria", 0);
   glutAddMenuEntry("Finjuh", 1);
   glutAddMenuEntry("Wb", 2);
-  int subMenu2 = glutCreateMenu(subMenu2_callback);
-    glutAddMenuEntry("Free Cam Mode", 0);
-    glutAddMenuEntry("Arcball Cam Mode", 1);
-    glutAddMenuEntry("Hero POV view", 2);
+  int fpvHeroes = glutCreateMenu(subMenu_fpvHero_callback);
+  glutAddMenuEntry("Artoria", 0);
+  glutAddMenuEntry("Finjuh", 1);
+  glutAddMenuEntry("Wb", 2);
+  int cameraOptions = glutCreateMenu(subMenu_cameraType_callback);
+  glutAddMenuEntry("Free Cam Mode", 0);
+  glutAddMenuEntry("Arcball Cam Mode", 1);
+  glutAddMenuEntry("Hero POV view", 2);
   glutCreateMenu(menu_callback);
-  glutAddSubMenu("Change Hero", subMenu);
-    glutAddSubMenu("Change Camera", subMenu2);
+  glutAddSubMenu("Change Camera", cameraOptions);
+  glutAddSubMenu("Change arcball Hero", arcballHeroes);
+  glutAddSubMenu("Change fpv Hero", fpvHeroes);
   glutAddMenuEntry("Quit", 0);
   glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
@@ -294,15 +347,16 @@ int main(int argc, char** argv) {
   float cameraTheta = M_PI / 3.0f;
   float cameraPhi = 2.8f;
   float cameraRadius = 300;
-
+    
   // draw the heroes
-  artoria = new Artoria(Point(0, 0, 0), Vector(0, 0, 0));
+  artoria = new Artoria(Point(0, 0, 0), Vector(-1, 1, -1));
   finjuh = new Finjuh(Point(20, 0, 20), Vector(0, 0, 0));
   wb = new Wb(Point(0, 20, 0), Vector(0, 1, 0), "bez_pts.csv");
   
   // set camera to arcball initially
   mainCamera = Camera(2, 0, 0, 0, cameraRadius, cameraTheta, cameraPhi);
   currentHero = artoria;
+  fpvHero = artoria;
     
   // initialize glut and make sure we have everything set up
   glutInit(&argc, argv);
