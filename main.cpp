@@ -14,6 +14,7 @@
 #include <math.h>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <vector>
 #include <string>
 #include "terrain.h"
@@ -42,6 +43,9 @@ size_t window_height = 480;
 GLuint envDL;
 GLint leftMouseButton;                      // status of the mouse buttons
 int mouseX = 0, mouseY = 0;                 // last known X and Y of the mouse
+int frame=0;
+int currentTime, timebase=0;
+float fps;
 
 // Files to read from
 string terrain_points;
@@ -72,6 +76,59 @@ float wh_z = 1.0;
 float wh_h = 0.0;
 bool keys[256];
 int a = 0;
+
+// caluclates and then displays the fps to the screen
+void calculateFPS() {
+    
+    // increment frames we will use for fames / sec
+    frame++;
+    // gets the elapsed time since init
+    currentTime = glutGet(GLUT_ELAPSED_TIME);
+    
+    // we subtract current time and timebase to see if 1000 millis seconds have passed
+    if (currentTime - timebase > 1000) {
+        // the fps is the amount of frames divided by the time passed converted back to seconds
+        fps = frame / ((currentTime - timebase) / 1000.0f);
+        timebase = currentTime;
+        
+        // reset frames
+        frame = 0;
+    }
+    
+    // in order to display the text we need to first save our current matrix and go through setting the display for a 2D view
+    glMatrixMode(GL_PROJECTION);
+    glPushMatrix(); {
+        glLoadIdentity();
+        glMatrixMode(GL_MODELVIEW);
+        glPushMatrix(); {
+            // disabled depth test and lighting so we can draw the lines
+            glLoadIdentity();
+            glDisable(GL_DEPTH_TEST);
+            glDisable(GL_LIGHTING);
+            glColor3f(1, 1, 1);
+            
+            // set the position for the screen to be on the bottom right corner
+            glRasterPos2f(.58, -.9);
+            
+            // convert the fps into a string to display
+            string s;
+            ostringstream ss;
+            ss << fps;
+            s = ss.str();
+            s = "FPS: " + s;
+            
+            // convert the string to bitmap and display each character
+            for (int i = 0; i < s.length(); i++)
+            {
+                glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, s.at(i));
+            }
+            glMatrixMode(GL_PROJECTION);
+        } glPopMatrix();
+        glMatrixMode(GL_MODELVIEW);
+    } glPopMatrix();
+    glEnable(GL_LIGHTING);
+    glEnable(GL_DEPTH_TEST);
+}
 
 // Environment setup functions.
 
@@ -146,7 +203,6 @@ void render() {
   
   // draws main scene first time
   drawScene();
-    
   // if fpv camera on we then repeat above process for a second view
   if(fpvMode) {
       scissorScene(window_width / 4, window_height / 4);
@@ -162,6 +218,7 @@ void render() {
     
       drawScene();
   }
+  calculateFPS();
   glutSwapBuffers();
 }
 
@@ -294,6 +351,12 @@ void subMenu_cameraType_callback(int option) {
     
 }
 
+// Idle Function
+void idleFunc() {
+    
+    
+}
+
 // Timer functions.
 
 void render_timer(int value) {
@@ -423,6 +486,7 @@ int main(int argc, char** argv) {
   glutKeyboardUpFunc(normal_keys_up);
   glutMouseFunc(mouseCallback);
   glutMotionFunc(mouseMotion);
+  glutIdleFunc(idleFunc);
   anim_timer(0);
   render_timer(0);
 
