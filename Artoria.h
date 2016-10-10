@@ -3,6 +3,7 @@
 #include "point.h"
 #include "vector.h"
 #include "hero.h"
+#include <vector>
 #include <string.h>
 
 // is the main hero drawing class
@@ -16,7 +17,8 @@ public:
     float legAngle;
     float armAngle, armAngle2;
     int legDirection, tailAngle, tailDirection;
-    bool toArms, lunyPath, showCtrlPts, showCurve;
+    bool toArms, showCtrlPts, showCurve;
+    std::vector<Point> lunyPath;
     char *name = "Artoria";
     // her pet we attach to her
     Luny luny;
@@ -27,7 +29,7 @@ public:
     
     ~Artoria() {}
     
-    Artoria(Point startPos, Vector startDir) {
+    Artoria(Point startPos, Vector startDir, std::string lunyP) {
         direction = startDir;
         
         position = startPos;
@@ -40,12 +42,12 @@ public:
 		tailAngle = 0;
 		tailDirection = 2;
 		toArms = true;
-        lunyPath = true;
-        showCtrlPts = true;
-        showCurve = true;
+        getPath(lunyP);
+        showCtrlPts = false;
+        showCurve = false;
         recomputeHeroDirection();
         // give Luny her path -> all the control points
-        //luny = Luny(path);
+        luny = Luny(lunyPath);
     }
 
 // all the drawing functions
@@ -88,4 +90,6 @@ public:
     void moveHeroBackward();
     
     void shakeTail();
+    
+    void getPath(std::string filename);
 };

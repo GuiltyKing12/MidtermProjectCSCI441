@@ -14,9 +14,9 @@ using namespace std;
 // Computes a location along a Bezier Curve.
 Point Luny::evaluateBezierCurve( Point p0, Point p1, Point p2, Point p3, float t ) {
     // using the equation we turng the 4 points into the eqaution using t as the value needed
-    Point a = ((-1.0f * p0) + (3.0f * p1) + (-3.0f * p2) + p3) * pow(t, 3);
-    Point b = ((3.0f * p0) + (-6.0f * p1) + (3.0f * p2)) * pow(t, 2);
-    Point c = ((-3.0f * p0) + (3.0f * p1)) * t;
+    Point a = ((p0 * -1.0f) + (p1 * 3.0f) + (p2 * -3.0f) + p3) * pow(t, 3);
+    Point b = ((p0 * 3.0f) + (p1 * -6.0f) + (p2 * 3.0f)) * pow(t, 2);
+    Point c = ((p0 * -3.0f) + (p1 * 3.0f)) * t;
     
     Point curvePoint = a + b + c + p0;
     
@@ -36,7 +36,7 @@ void Luny::renderBezierCurve( Point p0, Point p1, Point p2, Point p3, int resolu
             
             // call bezier curve equation to get specific point
             Point curvePoint = evaluateBezierCurve(p0, p1, p2, p3, i);
-            glVertex3f(curvePoint.getX(), curvePoint.getY(), curvePoint.getZ());
+            glVertex3f(curvePoint.x, curvePoint.y, curvePoint.z);
         }
     } glEnd();
 }
@@ -51,7 +51,7 @@ void Luny::drawPath(bool showCtrlPts, bool showCurve) {
             // we move to each point on the x,y,z and draw a sphere
             for(int i = 0; i < path.size(); i++) {
                 glPushMatrix(); {
-                    glTranslatef(path[i].getX(), path[i].getY(), path[i].getZ());
+                    glTranslatef(path[i].x, path[i].y, path[i].z);
                     glutSolidSphere(1, 30, 30);
                 } glPopMatrix();
             }
@@ -63,8 +63,8 @@ void Luny::drawPath(bool showCtrlPts, bool showCurve) {
             for(int i = 0; i < path.size() - 1; i++) {
                 glPushMatrix(); {
                     glBegin(GL_LINES); {
-                        glVertex3f(path[i].getX(), path[i].getY(), path[i].getZ());
-                        glVertex3f(path[i + 1].getX(), path[i + 1].getY(), path[i + 1].getZ());
+                        glVertex3f(path[i].x, path[i].y, path[i].z);
+                        glVertex3f(path[i + 1].x, path[i + 1].y, path[i + 1].z);
                     } glEnd();
                 } glPopMatrix();
             }
@@ -86,7 +86,7 @@ void Luny::drawPath(bool showCtrlPts, bool showCurve) {
 void Luny::drawLuny() {
     glPushMatrix(); {
         // we draw Luny at the position defined by its position on the bezier curve
-        glTranslatef(position.getX(), position.getY(), position.getZ());
+        glTranslatef(position.x, position.y, position.z);
         glutSolidSphere(2, 20, 20);
         
         // we seperate the drawing of both wings and rotate by flap angle

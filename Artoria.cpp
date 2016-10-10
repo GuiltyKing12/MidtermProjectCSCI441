@@ -10,6 +10,12 @@
 #include <GL/glu.h>
 #endif
 
+#include <fstream>			// we'll use ifstream
+#include <stdio.h>
+#include <stdlib.h>
+
+using namespace std;
+
 void Artoria::drawName() {
     char* c;
     glPushMatrix(); {
@@ -291,8 +297,8 @@ void Artoria::drawHero() {
         drawTorso();
         glPushMatrix(); {
             glTranslatef(0, 20, 15);
-            //luny.drawLuny();
-            //luny.drawPath(showCtrlPts, showCurve);
+            luny.drawLuny();
+            luny.drawPath(showCtrlPts, showCurve);
         } glPopMatrix();
     } glPopMatrix();
     
@@ -352,4 +358,45 @@ void Artoria::moveHeroBackward() {
 void Artoria::shakeTail() {
     tailAngle += tailDirection;
     if(tailAngle == 30 || tailAngle == -30) tailDirection = -tailDirection;
+}
+
+void Artoria::getPath(string filename) {
+    ifstream file;
+    file.open(filename);
+    //if(!file) return false;
+    
+    // read the first line which tells how many points there will be
+    int points;
+    file >> points;
+    fprintf(stdout, "Number of Points: %d\n", points);
+    
+    // using that points number we read that many times to get x, y, z coordinates
+    for(int i = 0; i < points; i++) {
+        // read line as string and get substring using , in order to convert to float
+        string line;
+        file >> line;
+        line += ',';
+        
+        // set checks for specific things to keep track of reading in the variables
+        int counter = 0;
+        int pos = 0;
+        float coordinates [3];
+        
+        // we extract the numbers and put them into the array
+        for(int k = 0; k < line.length(); k++) {
+            if(line.at(k) == ',') {
+                coordinates[counter] = atof(line.substr(pos, k).c_str());
+                pos = k + 1;
+                counter++;
+            }
+        }
+        
+        // create a new point with the coordinates and put into vector of control vector
+        Point point(coordinates[0], coordinates[1], coordinates[2]);
+        lunyPath.push_back(point);
+        fprintf(stdout, "Point( %f, %f, %f)\n", coordinates[0], coordinates[1], coordinates[2]);
+    }
+    
+    // close file when done
+    file.close();
 }

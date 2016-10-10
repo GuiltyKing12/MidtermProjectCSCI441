@@ -50,6 +50,7 @@ float fps;
 // Files to read from
 string terrain_points;
 string bezier_points;
+string lunyPath;
 string objects;
 
 Terrain t;
@@ -352,12 +353,6 @@ void subMenu_cameraType_callback(int option) {
     
 }
 
-// Idle Function
-void idleFunc() {
-    
-    
-}
-
 // Timer functions.
 
 void render_timer(int value) {
@@ -370,6 +365,8 @@ void render_timer(int value) {
 void anim_timer(int value) {
   // Do animation stuff here
   artoria->shakeTail();
+  artoria->luny.move();
+  artoria->luny.flap();
   wb->anim();
   glutTimerFunc(1000.0 / 10.0, anim_timer, 0);
 }
@@ -392,6 +389,9 @@ bool loadInputFiles( char* file ) {
   bezier_points = temp.c_str();
   //fprintf(stdout, "Bezier Points File: %s\n", bezier_points);
   
+  fin >> temp;
+  lunyPath = temp.c_str();
+    
   fin >> temp;
   objects = temp.c_str();
   //fprintf(stdout, "Objects File: %s\n", objects);
@@ -463,7 +463,7 @@ int main(int argc, char** argv) {
   float cameraRadius = 300;
     
   // draw the heroes
-  artoria = new Artoria(Point(0, 0, 0), Vector(-1, 1, -1));
+  artoria = new Artoria(Point(0, 0, 0), Vector(-1, 1, -1), lunyPath);
   finjuh = new Finjuh(Point(20, 0, 20), Vector(0, 0, 0));
   wb = new Wb(Point(0, 20, 0), Vector(0, 1, 0), bezier_points);
   
@@ -487,7 +487,6 @@ int main(int argc, char** argv) {
   glutKeyboardUpFunc(normal_keys_up);
   glutMouseFunc(mouseCallback);
   glutMotionFunc(mouseMotion);
-  glutIdleFunc(idleFunc);
   anim_timer(0);
   render_timer(0);
 
