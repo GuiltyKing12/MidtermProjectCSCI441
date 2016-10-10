@@ -108,7 +108,7 @@ void calculateFPS() {
             glColor3f(1, 1, 1);
             
             // set the position for the screen to be on the bottom right corner
-            glRasterPos2f(.58, -.9);
+            glRasterPos2f(.7, -.9);
             
             // convert the fps into a string to display
             string s;
@@ -203,6 +203,7 @@ void render() {
   
   // draws main scene first time
   drawScene();
+  calculateFPS();
   // if fpv camera on we then repeat above process for a second view
   if(fpvMode) {
       scissorScene(window_width / 4, window_height / 4);
@@ -218,7 +219,6 @@ void render() {
     
       drawScene();
   }
-  calculateFPS();
   glutSwapBuffers();
 }
 
