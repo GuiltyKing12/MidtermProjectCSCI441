@@ -26,8 +26,6 @@ class Wb : public Hero {
     Wb();
     Wb(Point p, Vector d, std::string pet_path_fn);
 
-    float heading;
-
     void draw(bool key_down);
     void move(bool w_down, bool s_down, bool a_down, bool d_down, float x_min, float x_max, float z_min, float z_max);
     void anim();

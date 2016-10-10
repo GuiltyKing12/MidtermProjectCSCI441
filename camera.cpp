@@ -90,8 +90,29 @@ void Camera::look(Point look) {
     }
 }
 
-void Camera::fpvLook(Point heroPos, Vector heroDir) {
-    gluLookAt(heroPos.x, heroPos.y+20, heroPos.z-20,
-              heroDir.x+heroPos.x, heroDir.y+heroPos.y, heroDir.z+heroPos.z,
+void Camera::fpvLook(Point heroPos, Vector heroDir, float heroHeading) {
+    Vector ortho = heroDir.Cross(Vector(1, 0, 0));
+    Vector u_n = heroDir / heroDir.magnitude();
+    float c = cos(heroHeading);
+    float s = sin(heroHeading);
+    Vector pt(
+      (c + u_n.x * u_n.x * (1 - c)) * ortho.x
+        + (u_n.x * u_n.y * (1 - c) - u_n.z * s) * ortho.y
+        + (u_n.x * u_n.z * (1 - c) + u_n.y * s) * ortho.z,
+
+      (u_n.y * u_n.x * (1 - c) + u_n.z * s) * ortho.x
+        + (c + u_n.y * u_n.y * (1 - c)) * ortho.y
+        + (u_n.y * u_n.z * (1 - c) - u_n.x * s) * ortho.z,
+
+      (u_n.z * u_n.x * (1 - c) - u_n.y * s) * ortho.x
+        + (u_n.z * u_n.y * (1 - c) + u_n.x * s) * ortho.y
+        + (c + u_n.z * u_n.z * (1 - c)) * ortho.z
+    );
+
+    u_n = u_n * 15;
+    pt = pt * 10;
+
+    gluLookAt(heroPos.x + u_n.x, heroPos.y + u_n.y, heroPos.z + u_n.z,
+              heroPos.x + pt.x, heroPos.y + pt.y, heroPos.z + pt.z,
               0, 1, 0);
 }
