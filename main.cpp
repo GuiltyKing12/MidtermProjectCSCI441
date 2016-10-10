@@ -203,7 +203,6 @@ void render() {
   
   // draws main scene first time
   drawScene();
-  calculateFPS();
   // if fpv camera on we then repeat above process for a second view
   if(fpvMode) {
       scissorScene(window_width / 4, window_height / 4);
@@ -218,7 +217,9 @@ void render() {
       fpvCamera.fpvLook(fpvHero->position, fpvHero->direction);
     
       drawScene();
+      glViewport(0, 0, window_width, window_height);
   }
+  calculateFPS();
   glutSwapBuffers();
 }
 
