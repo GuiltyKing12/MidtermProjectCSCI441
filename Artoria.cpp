@@ -362,7 +362,7 @@ void Artoria::shakeTail() {
 
 void Artoria::getPath(string filename) {
     ifstream file;
-    file.open(filename);
+    file.open(filename.c_str());
     //if(!file) return false;
     
     // read the first line which tells how many points there will be
