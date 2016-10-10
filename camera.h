@@ -47,5 +47,5 @@ class Camera {
     
     void recomputeOrientation();
     void look(Point look);
-    void fpvLook(Point heroPos, Vector heroDir);
+    void fpvLook(Point heroPos, Vector heroDir, float heroHeading);
 };

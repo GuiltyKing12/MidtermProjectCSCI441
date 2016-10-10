@@ -1,4 +1,4 @@
-terrain_pts_2.csv
+terrain_pts.csv
 bez_pts.csv
 lunyPath.csv
 objects.csv

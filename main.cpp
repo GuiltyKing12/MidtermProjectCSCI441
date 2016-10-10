@@ -158,13 +158,20 @@ void resize(int w, int h) {
   gluPerspective(45.0, (float) w / h, 0.1, 100000);
 }
 
-void drawScene() {
+void drawScene(bool fpv) {
     // Draw the terrain.
     glCallList(envDL);
     
-    artoria->drawHero();
-    finjuh->drawHero();
-    wb->draw(keys_down[W] || keys_down[A] || keys_down[S] || keys_down[D]);
+    if (!fpv || fpvHero != artoria) {
+      artoria->drawHero();
+    }
+    if (!fpv || fpvHero != finjuh) {
+      finjuh->drawHero();
+    }
+    if (!fpv || fpvHero != wb) {
+      wb->draw(keys_down[W] || keys_down[A] || keys_down[S] || keys_down[D]);
+    }
+
     artoria->moveHeroForward();
     artoria->recomputeHeroDirection();
 }
@@ -201,9 +208,9 @@ void render() {
   // set the camera to look, if free cam we look in its direction
   // else we are in arcball looking at the current hero
   mainCamera.look(currentHero->position);
-  
+
   // draws main scene first time
-  drawScene();
+  drawScene(false);
   // if fpv camera on we then repeat above process for a second view
   if(fpvMode) {
       scissorScene(window_width / 4, window_height / 4);
@@ -215,9 +222,9 @@ void render() {
     
       glMatrixMode(GL_MODELVIEW);
       glLoadIdentity();
-      fpvCamera.fpvLook(fpvHero->position, fpvHero->direction);
+      fpvCamera.fpvLook(fpvHero->position, fpvHero->direction, fpvHero->heading);
     
-      drawScene();
+      drawScene(true);
       glViewport(0, 0, window_width, window_height);
   }
   calculateFPS();
