@@ -140,7 +140,7 @@ void generate_env_dl() {
     glPushMatrix();
       t.draw();
 	  o.load_and_draw();
-      tr.draw();
+      //tr.draw();
     glPopMatrix();
   glEndList();
 }
@@ -214,6 +214,8 @@ void render() {
   // if fpv camera on we then repeat above process for a second view
   if(fpvMode) {
       scissorScene(window_width / 4, window_height / 4);
+      glEnable(GL_SCISSOR_TEST);
+      glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       glDisable(GL_SCISSOR_TEST);
     
       glMatrixMode(GL_PROJECTION);
