@@ -13,7 +13,7 @@ Track::Track(std::string fn) {
   calculate_lookup();
   parametric_t = 0;
     res = 100;
-    step = 1;
+    step = segments;
 }
 
 void Track::draw() {
