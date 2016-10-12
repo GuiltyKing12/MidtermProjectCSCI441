@@ -103,32 +103,61 @@ Vector Track::parametric_dir() {
     return dir / dir.magnitude();
 }
 
-Vector Track::curve_normal() {
+Vector Track::parametric_normal() {
     return parametric_dir().Cross(Vector(1,0,0));
 }
 
-Point Track::arc_pos() {
-    res = 100;
-    float a = 0;
-    float b = 0;
-    float distance;
-    
-    while(a + 1 < parametric_t) {
-        a++;
+Point Track::arc_move() {
+    int a = 0;
+    int b = 1;
+    for (int i = 0; i < segments * 100; i += 1) {
+      if (lookup_table[i] > arc_t) {
+        a = i - 1;
+        b = i;
+        break;
+      }
     }
-    
-    while(b + 1 < segments * res && b < parametric_t) {
-        b++;
+
+    float offset = (arc_t - lookup_table[a]) / (lookup_table[b] - lookup_table[a]);
+    float t = (1 - offset) * ((float)a / 100) + offset * ((float)b / 100);
+
+    arc_t += (max_dist / 100);
+    if (arc_t >= max_dist) {
+      arc_t -= max_dist;
     }
-    
-    distance = (parametric_t - a) / (b - a);
-    
-    return lookup_table[a] * ( 1 - distance) + lookup_table[b] * (distance);
+    return get_point(t);
+}
+
+Vector Track::arc_dir() {
+    int a = 0;
+    int b = 1;
+    for (int i = 0; i < segments * 100; i += 1) {
+      if (lookup_table[i] > arc_t) {
+        a = i - 1;
+        b = i;
+        break;
+      }
+    }
+
+    float offset = (arc_t - lookup_table[a]) / (lookup_table[b] - lookup_table[a]);
+    float t = (1 - offset) * ((float)a / 100) + offset * ((float)b / 100);
+    float nt = t + 0.05;
+    if (nt >= segments) {
+      nt -= segments;
+    }
+
+    return get_point(nt) - get_point(t);
+}
+
+Vector Track::arc_normal() {
+  return arc_dir().Cross(Vector(1, 0, 0));
 }
 
 void Track::calculate_lookup() {
-    res = 100;
-    for (float t = 0; t < segments * res; t ++) {
-        lookup_table[t] = get_point(t / res);
+    lookup_table[0] = 0;
+    for (int t = 1; t < segments * 100; t += 1) {
+      float dist = (get_point((float)t / 100) - get_point((float)(t - 1) / 100)).magnitude();
+      lookup_table[t] = lookup_table[t - 1] + dist;
     }
+    max_dist = lookup_table[segments * 100 - 1];
 }
