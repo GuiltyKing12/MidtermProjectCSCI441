@@ -18,6 +18,8 @@ public:
 	bool showCtrlCage, showCurve;
 
     char *name = "Finjuh";
+    
+    Vector surfaceNormal;
 	//Creature pet;
 
 public:

@@ -166,8 +166,12 @@ void Finjuh::drawLowerBody() {
 
 void Finjuh::drawHero() {
     glPushMatrix(); {
+        Vector up(0, 1, 0);
+        Vector axis = up.Cross(surfaceNormal);
+        float angle = up.Dot(surfaceNormal);
         glTranslatef(position.x, position.y, position.z);
-        glRotatef(orientation, 0, 1 ,0);
+        glRotatef(-angle * 180.0 / 3.14159, axis.x, axis.y ,axis.z);
+        glRotatef(orientation * 180 / 3.14159 + 180, 0, 1, 0);
         drawLowerBody();
         drawUpperBody();
 		drawHead();

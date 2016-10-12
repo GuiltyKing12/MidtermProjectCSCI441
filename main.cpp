@@ -384,6 +384,9 @@ void anim_timer(int value) {
   artoria->surfaceNormal = tr.parametric_normal();
     
   finjuh->position = tr.arc_pos();
+  finjuh->orientation += finjuh->direction.Dot(tr.parametric_dir());
+  finjuh->direction = tr.parametric_dir();
+  finjuh->surfaceNormal = tr.parametric_normal();
   wb->anim();
     
   glutTimerFunc(1000.0 / 10.0, anim_timer, 0);
@@ -485,7 +488,9 @@ int main(int argc, char** argv) {
   artoria = new Artoria(tr.get_point(0), Vector(0, 0, 1), lunyPath);
   artoria->orientationAngle = -artoria->direction.Dot(tr.parametric_dir());
   artoria->direction = tr.parametric_dir();
-  finjuh = new Finjuh(Point(20, 0, 20), Vector(0, 0, 0));
+  finjuh = new Finjuh(Point(20, 0, 20), Vector(0, 0, 1));
+  finjuh->orientation = -finjuh->direction.Dot(tr.parametric_dir());
+  finjuh->direction = tr.parametric_dir();
   wb = new Wb(Point(0, 20, 0), Vector(0, 1, 0), bezier_points);
   
   // set camera to arcball initially
