@@ -29,7 +29,7 @@ class Track {
     Vector curve_normal();
     void move();
 
-    Point arc_move();
+    Point arc_pos();
     
     Point get_point(float t);
     int get_num_segments() { return segments; }

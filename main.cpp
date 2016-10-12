@@ -372,19 +372,20 @@ void render_timer(int value) {
 }
 
 void anim_timer(int value) {
+  tr.move();
+    
   // Do animation stuff here
   artoria->shakeTail();
   artoria->luny.move();
   artoria->luny.flap();
   artoria->position = tr.parametric_pos();
-  artoria->orientationAngle += -artoria->direction.Dot(tr.parametric_dir());
+  artoria->orientationAngle += artoria->direction.Dot(tr.parametric_dir());
   artoria->direction = tr.parametric_dir();
   //artoria->surfaceNormal = tr.curve_normal();
     
-  finjuh->position = tr.arc_move();
+  finjuh->position = tr.arc_pos();
   wb->anim();
     
-    tr.move();
   glutTimerFunc(1000.0 / 10.0, anim_timer, 0);
 }
 
@@ -481,8 +482,8 @@ int main(int argc, char** argv) {
     
   // draw the heroes
   artoria = new Artoria(tr.get_point(0), Vector(0, 0, 1), lunyPath);
-    artoria->orientationAngle = -artoria->direction.Dot(tr.parametric_dir());
-    artoria->direction = tr.parametric_dir();
+  artoria->orientationAngle = -artoria->direction.Dot(tr.parametric_dir());
+  artoria->direction = tr.parametric_dir();
   finjuh = new Finjuh(Point(20, 0, 20), Vector(0, 0, 0));
   wb = new Wb(Point(0, 20, 0), Vector(0, 1, 0), bezier_points);
   

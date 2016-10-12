@@ -296,7 +296,7 @@ void Artoria::drawHero() {
         float angle = up.Dot(surfaceNormal);
         glTranslatef(position.x, position.y, position.z);
         //glRotatef(-angle * 180.0 / 3.14159, axis.x, axis.y ,axis.z);
-        glRotatef(-orientationAngle * 180 / 3.14159, 0, 1, 0);
+        glRotatef(orientationAngle * 180 / 3.14159, 0, 1, 0);
         drawLowerBody();
         drawTorso();
         glPushMatrix(); {
@@ -317,11 +317,6 @@ void Artoria::recomputeHeroDirection() {
     
     direction.x = .1 * direction.x / magnitude;
     direction.z = .1 * direction.z / magnitude;
-}
-
-void Artoria::trackHeroHeading(Vector v) {
-    if(direction.Dot(v) != 0) orientationAngle = direction.Dot(v);
-    direction = v;
 }
 
 void Artoria::moveLegs() {

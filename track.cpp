@@ -5,7 +5,7 @@ Track::Track() {
   calculate_lookup();
   parametric_t = 0;
     res = 100;
-    step = 3;
+    step = 5;
 }
 
 Track::Track(std::string fn) {
@@ -91,23 +91,23 @@ Point Track::bez_curve(float t, Point p0, Point p1, Point p2, Point p3) {
 
 void Track::move() {
     parametric_t += step;
-    if(parametric_t > (segments * res) - 1) parametric_t = 0;
+    if(parametric_t > (segments * res) - 1) parametric_t = (int)parametric_t % (segments * res - 1);
 }
-
 
 Point Track::parametric_pos() {
     return get_point(parametric_t / res);
 }
 
 Vector Track::parametric_dir() {
-    return get_point(parametric_t / res) - get_point((parametric_t + 1) / res);
+    Vector dir = get_point(parametric_t / res) - get_point((parametric_t + 1) / res);
+    return dir / dir.magnitude();
 }
 
 Vector Track::curve_normal() {
     return parametric_dir().Cross(Vector(1,0,0));
 }
 
-Point Track::arc_move() {
+Point Track::arc_pos() {
     res = 100;
     float a = 0;
     float b = 0;

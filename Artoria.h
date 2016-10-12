@@ -85,8 +85,6 @@ public:
 public:
     void recomputeHeroDirection();
     
-    void trackHeroHeading(Vector v);
-    
     void moveHeroForward();
     
     void moveLegs();
