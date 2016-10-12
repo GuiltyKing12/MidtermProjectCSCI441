@@ -34,7 +34,7 @@ public:
 
         showCtrlCage = true;
         showCurve = true;
-		//pet = Creature(path);
+		//pet = Creature();
 	}
 
 public:

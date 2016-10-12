@@ -78,7 +78,7 @@ float wh_h = 0.0;
 bool keys[256];
 int a = 0;
 
-// caluclates and then displays the fps to the screen
+// calculates and then displays the fps to the screen
 void calculateFPS() {
     
     // increment frames we will use for fames / sec
@@ -402,6 +402,7 @@ bool loadInputFiles( char* file ) {
   terrain_points = temp.c_str();
   //fprintf(stdout, "Terrain Points File: %s\n", terrain_points);
   t = Terrain(terrain_points);
+  //tr = Track();
   
   fin >> temp;
   bezier_points = temp.c_str();
