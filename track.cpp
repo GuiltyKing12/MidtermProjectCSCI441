@@ -91,7 +91,7 @@ Point Track::parametric_move() {
     int res = 100;
     if(parametric_t > segments * res) parametric_t = 0;
     Point currentPoint = get_point(parametric_t / res);
-    parametric_t++;;
+    parametric_t++;
     return currentPoint;
 }
 

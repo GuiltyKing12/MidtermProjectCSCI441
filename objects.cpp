@@ -19,7 +19,7 @@ void Objects::load_and_draw() {
   string object_orientation;
   int object_size;
   
-  for (int i = 0; i < num_objects; i += 1) {
+  for (int i = 0; i < num_objects; i ++) {
 	float coords [3];
 	float orient [3];
 	
@@ -59,6 +59,7 @@ void Objects::load_and_draw() {
         glTranslatef(coords[0], coords[1], coords[2]);
 		glScalef(object_size, object_size, object_size);
 		// Insert orientation here
+		//glRotatef();
 		// Also, make sure correct size
 		glutSolidCube(8);
 		
@@ -77,6 +78,7 @@ void Objects::load_and_draw() {
 		glScalef(1.2, 1, 1.5);
 		glScalef(object_size, object_size, object_size);
 		// Insert orientation here
+		//glRotatef();
 		// Also, make sure correct size
         glutSolidSphere(5, 23, 23);
       } glPopMatrix();
