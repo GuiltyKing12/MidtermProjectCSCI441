@@ -16,12 +16,10 @@ void Objects::load_and_draw() {
 
   string object_type;
   string object_location;
-  string object_orientation;
   int object_size;
   
   for (int i = 0; i < num_objects; i ++) {
-	float coords [3];
-	float orient [3];
+	float coords [2];
 	
     getline(fin, line);
 	object_type = line.c_str();
@@ -34,18 +32,6 @@ void Objects::load_and_draw() {
       if(line.at(j) == ',') {
         coords[count] = atof(line.substr(pos, j).c_str());
         pos = j + 1;
-        count++;
-      }
-    }
-	
-	count = 0;
-    pos = 0;
-	getline(fin, line);
-	line += ',';
-	for(int k = 0; k < line.length(); k++) {
-      if(line.at(k) == ',') {
-        orient[count] = atof(line.substr(pos, k).c_str());
-        pos = k + 1;
         count++;
       }
     }
