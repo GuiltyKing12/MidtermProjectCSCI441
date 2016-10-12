@@ -381,7 +381,7 @@ void anim_timer(int value) {
   artoria->position = tr.parametric_pos();
   artoria->orientationAngle += artoria->direction.Dot(tr.parametric_dir());
   artoria->direction = tr.parametric_dir();
-  //artoria->surfaceNormal = tr.curve_normal();
+  artoria->surfaceNormal = tr.parametric_normal();
     
   finjuh->position = tr.arc_pos();
   wb->anim();
@@ -402,7 +402,7 @@ bool loadInputFiles( char* file ) {
   terrain_points = temp.c_str();
   //fprintf(stdout, "Terrain Points File: %s\n", terrain_points);
   t = Terrain(terrain_points);
-  //tr = Track();
+  tr = Track(terrain_points);
   
   fin >> temp;
   bezier_points = temp.c_str();

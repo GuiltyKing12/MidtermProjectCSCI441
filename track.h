@@ -26,10 +26,12 @@ class Track {
     void draw();
     Point parametric_pos();
     Vector parametric_dir();
-    Vector curve_normal();
+    Vector parametric_normal();
     void move();
 
     Point arc_pos();
+    Vector arc_dir();
+    Vector arc_normal();
     
     Point get_point(float t);
     int get_num_segments() { return segments; }
@@ -38,9 +40,10 @@ class Track {
     int segments;
     int res;
     int step;
-    float parametric_t;
+    float parametric_t, arc_t;
     Point** control_points;
-    std::map<float,Point> lookup_table;
+    std::map<float,float> lookup_table;
+    float max_dist;
 
     void load_points(std::string fn);
     void vertex(Point p);

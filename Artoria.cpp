@@ -295,8 +295,8 @@ void Artoria::drawHero() {
         Vector axis = up.Cross(surfaceNormal);
         float angle = up.Dot(surfaceNormal);
         glTranslatef(position.x, position.y, position.z);
-        //glRotatef(-angle * 180.0 / 3.14159, axis.x, axis.y ,axis.z);
-        glRotatef(orientationAngle * 180 / 3.14159, 0, 1, 0);
+        glRotatef(-angle * 180.0 / 3.14159, axis.x, axis.y ,axis.z);
+        glRotatef(orientationAngle * 180 / 3.14159 + 180, 0, 1, 0);
         drawLowerBody();
         drawTorso();
         glPushMatrix(); {
