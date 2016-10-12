@@ -381,7 +381,7 @@ void anim_timer(int value) {
   artoria->position = tr.parametric_pos();
   artoria->orientationAngle += artoria->direction.Dot(tr.parametric_dir());
   artoria->direction = tr.parametric_dir();
-  //artoria->surfaceNormal = tr.curve_normal();
+  artoria->surfaceNormal = tr.parametric_normal();
     
   finjuh->position = tr.arc_pos();
   wb->anim();

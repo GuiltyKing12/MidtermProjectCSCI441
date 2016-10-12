@@ -104,7 +104,11 @@ Vector Track::parametric_dir() {
 }
 
 Vector Track::parametric_normal() {
-    return parametric_dir().Cross(Vector(1,0,0));
+    Vector n = parametric_dir().Cross(Vector(1, 0, 0));
+    if (n.y < 0) {
+      n = n * -1;
+    }
+    return n;
 }
 
 Point Track::arc_pos() {
