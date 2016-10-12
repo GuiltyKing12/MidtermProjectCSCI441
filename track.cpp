@@ -4,17 +4,19 @@ Track::Track() {
   load_points("terrain_pts.csv");
   calculate_lookup();
   parametric_t = 0;
+    res = 100;
+    step = 3;
 }
 
 Track::Track(std::string fn) {
   load_points(fn);
   calculate_lookup();
   parametric_t = 0;
+    res = 100;
+    step = 1;
 }
 
 void Track::draw() {
-  int res = 100;
-
   glPushMatrix();
     glColor3f(1, 1, 0);
     glBegin(GL_LINES);
@@ -87,18 +89,18 @@ Point Track::bez_curve(float t, Point p0, Point p1, Point p2, Point p3) {
   return p0 * mt3 + p1 * (3.0 * mt2 * t) + p2 * (3.0 * mt * t2) + p3 * t3;
 }
 
-Point Track::parametric_move() {
-    int res = 100;
-    if(parametric_t > segments * res) parametric_t = 0;
-    Point currentPoint = get_point(parametric_t / res);
-    parametric_t++;;
-    return currentPoint;
+void Track::move() {
+    parametric_t += step;
+    if(parametric_t > (segments * res) - 1) parametric_t = 0;
+}
+
+
+Point Track::parametric_pos() {
+    return get_point(parametric_t / res);
 }
 
 Vector Track::parametric_dir() {
-    int res = 100;
-    if(parametric_t + 1 < segments * res) return get_point(parametric_t / res) - get_point((parametric_t + .01) / res);
-    else return get_point(0) - get_point(1 / res);
+    return get_point(parametric_t / res) - get_point((parametric_t + 1) / res);
 }
 
 Vector Track::curve_normal() {
@@ -106,7 +108,7 @@ Vector Track::curve_normal() {
 }
 
 Point Track::arc_move() {
-    int res = 100;
+    res = 100;
     float a = 0;
     float b = 0;
     float distance;
@@ -125,7 +127,7 @@ Point Track::arc_move() {
 }
 
 void Track::calculate_lookup() {
-    int res = 100;
+    res = 100;
     for (float t = 0; t < segments * res; t ++) {
         lookup_table[t] = get_point(t / res);
     }

@@ -24,9 +24,10 @@ class Track {
     Track(std::string fn);
 
     void draw();
-    Point parametric_move();
+    Point parametric_pos();
     Vector parametric_dir();
     Vector curve_normal();
+    void move();
 
     Point arc_move();
     
@@ -35,6 +36,8 @@ class Track {
 
   private:
     int segments;
+    int res;
+    int step;
     float parametric_t;
     Point** control_points;
     std::map<float,Point> lookup_table;
