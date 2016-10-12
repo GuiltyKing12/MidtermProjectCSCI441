@@ -166,7 +166,7 @@ void Finjuh::drawLowerBody() {
 
 void Finjuh::drawHero() {
     glPushMatrix(); {
-        glTranslatef(position.x, 12, position.z);
+        glTranslatef(position.x, position.y, position.z);
         glRotatef(orientation, 0, 1 ,0);
         drawLowerBody();
         drawUpperBody();

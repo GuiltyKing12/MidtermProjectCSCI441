@@ -291,8 +291,12 @@ void Artoria::drawLowerBody() {
 void Artoria::drawHero() {
     // start by moving slightly up in order to draw the lower body
     glPushMatrix(); {
-        glTranslatef(position.x, 15, position.z);
-        glRotatef(orientationAngle, 0, 1 ,0);
+        Vector up(0, 1, 0);
+        Vector axis = up.Cross(surfaceNormal);
+        float angle = up.Dot(surfaceNormal);
+        glTranslatef(position.x, position.y, position.z);
+        //glRotatef(-angle * 180.0 / 3.14159, axis.x, axis.y ,axis.z);
+        glRotatef(-orientationAngle * 180 / 3.14159, 0, 1, 0);
         drawLowerBody();
         drawTorso();
         glPushMatrix(); {
@@ -313,6 +317,21 @@ void Artoria::recomputeHeroDirection() {
     
     direction.x = .1 * direction.x / magnitude;
     direction.z = .1 * direction.z / magnitude;
+}
+
+void Artoria::trackHeroHeading(Vector v) {
+    if(direction.Dot(v) != 0) orientationAngle = direction.Dot(v);
+    direction = v;
+}
+
+void Artoria::moveLegs() {
+    // increments/decrements leg angle to move them until certain limits
+    legAngle += legDirection;
+    if(legAngle == 60 || legAngle == -60) legDirection = -legDirection;
+    
+    // puts the arm angles at a certain point
+    armAngle = 30;
+    armAngle2 = 50;
 }
 
 void Artoria::moveHeroForward() {

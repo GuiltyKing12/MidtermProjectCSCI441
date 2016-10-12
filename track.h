@@ -14,7 +14,9 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <map>
 #include "point.h"
+#include "vector.h"
 
 class Track {
   public:
@@ -22,17 +24,25 @@ class Track {
     Track(std::string fn);
 
     void draw();
+    Point parametric_move();
+    Vector parametric_dir();
+    Vector curve_normal();
 
+    Point arc_move();
+    
     Point get_point(float t);
     int get_num_segments() { return segments; }
 
   private:
     int segments;
+    float parametric_t;
     Point** control_points;
+    std::map<float,Point> lookup_table;
 
     void load_points(std::string fn);
     void vertex(Point p);
     Point bez_curve(float t, Point p0, Point p1, Point p2, Point p3);
+    void calculate_lookup();
 };
 
 #endif

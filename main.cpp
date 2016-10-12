@@ -140,7 +140,7 @@ void generate_env_dl() {
     glPushMatrix();
       t.draw();
 	  o.load_and_draw();
-      //tr.draw();
+      tr.draw();
     glPopMatrix();
   glEndList();
 }
@@ -164,6 +164,7 @@ void drawScene(bool fpv) {
     
     if (!fpv || fpvHero != artoria) {
       artoria->drawHero();
+      artoria->moveLegs();
     }
     if (!fpv || fpvHero != finjuh) {
       finjuh->drawHero();
@@ -171,9 +172,6 @@ void drawScene(bool fpv) {
     if (!fpv || fpvHero != wb) {
       wb->draw(keys_down[W] || keys_down[A] || keys_down[S] || keys_down[D]);
     }
-
-    artoria->moveHeroForward();
-    artoria->recomputeHeroDirection();
 }
 
 void scissorScene(size_t w, size_t h) {
@@ -204,7 +202,9 @@ void render() {
   wb->position = p;
   wb->direction = n;
   wb->heading = wh_h;
-
+    
+    //fprintf(stdout,"Position %f, %f, %f\n", finjuh->position.x, finjuh->position.y, finjuh->position.z);
+    
   // set the camera to look, if free cam we look in its direction
   // else we are in arcball looking at the current hero
   mainCamera.look(currentHero->position);
@@ -376,6 +376,11 @@ void anim_timer(int value) {
   artoria->shakeTail();
   artoria->luny.move();
   artoria->luny.flap();
+    artoria->position = tr.parametric_move();
+    artoria->trackHeroHeading(tr.parametric_dir());
+    artoria->surfaceNormal = tr.curve_normal();
+    
+    finjuh->position = tr.arc_move();
   wb->anim();
   glutTimerFunc(1000.0 / 10.0, anim_timer, 0);
 }
@@ -472,7 +477,7 @@ int main(int argc, char** argv) {
   float cameraRadius = 300;
     
   // draw the heroes
-  artoria = new Artoria(Point(0, 0, 0), Vector(-1, 1, -1), lunyPath);
+  artoria = new Artoria(tr.get_point(0), tr.parametric_dir(), lunyPath);
   finjuh = new Finjuh(Point(20, 0, 20), Vector(0, 0, 0));
   wb = new Wb(Point(0, 20, 0), Vector(0, 1, 0), bezier_points);
   

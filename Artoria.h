@@ -19,6 +19,7 @@ public:
     int legDirection, tailAngle, tailDirection;
     bool toArms, showCtrlPts, showCurve;
     std::vector<Point> lunyPath;
+    Vector surfaceNormal;
     char *name = "Artoria";
     // her pet we attach to her
     Luny luny;
@@ -31,8 +32,8 @@ public:
     
     Artoria(Point startPos, Vector startDir, std::string lunyP) {
         direction = startDir;
-        
         position = startPos;
+        
 		
 		orientationAngle = 0;
 		legAngle = 0;
@@ -45,7 +46,7 @@ public:
         getPath(lunyP);
         showCtrlPts = false;
         showCurve = false;
-        recomputeHeroDirection();
+        //recomputeHeroDirection();
         // give Luny her path -> all the control points
         luny = Luny(lunyPath);
     }
@@ -84,7 +85,11 @@ public:
 public:
     void recomputeHeroDirection();
     
+    void trackHeroHeading(Vector v);
+    
     void moveHeroForward();
+    
+    void moveLegs();
     
     // does the same ting as above, but opposite
     void moveHeroBackward();
