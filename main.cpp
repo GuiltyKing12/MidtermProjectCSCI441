@@ -376,11 +376,11 @@ void anim_timer(int value) {
   artoria->shakeTail();
   artoria->luny.move();
   artoria->luny.flap();
-    artoria->position = tr.parametric_move();
-    artoria->trackHeroHeading(tr.parametric_dir());
-    artoria->surfaceNormal = tr.curve_normal();
+  artoria->position = tr.parametric_move();
+  artoria->trackHeroHeading(tr.parametric_dir());
+  artoria->surfaceNormal = tr.curve_normal();
     
-    finjuh->position = tr.arc_move();
+  finjuh->position = tr.arc_move();
   wb->anim();
   glutTimerFunc(1000.0 / 10.0, anim_timer, 0);
 }

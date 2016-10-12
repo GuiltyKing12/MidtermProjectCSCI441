@@ -88,15 +88,17 @@ Point Track::bez_curve(float t, Point p0, Point p1, Point p2, Point p3) {
 }
 
 Point Track::parametric_move() {
-    if(parametric_t > segments) parametric_t = 0;
-    Point currentPoint = get_point(parametric_t);
-    parametric_t += .005;
+    int res = 100;
+    if(parametric_t > segments * res) parametric_t = 0;
+    Point currentPoint = get_point(parametric_t / res);
+    parametric_t++;;
     return currentPoint;
 }
 
 Vector Track::parametric_dir() {
-    if(parametric_t + .01 < segments) return get_point(parametric_t) - get_point(parametric_t + .01);
-    else return get_point(0) - get_point(.01);
+    int res = 100;
+    if(parametric_t + 1 < segments * res) return get_point(parametric_t / res) - get_point((parametric_t + .01) / res);
+    else return get_point(0) - get_point(1 / res);
 }
 
 Vector Track::curve_normal() {
@@ -104,26 +106,27 @@ Vector Track::curve_normal() {
 }
 
 Point Track::arc_move() {
+    int res = 100;
     float a = 0;
     float b = 0;
-    /*while(b < parametric_t) {
-        if(a + .01 < parametric_t) {
-            a += .01;
-        }
-        
-        if(b + .01 > parametric_t) {
-            b += .01;
-        }
-        
-        if(b >= segments) b = segments - .001;
-    }*/
+    float distance;
     
-    return lookup_table[a] * (1-parametric_t) + lookup_table[b] * parametric_t;
+    while(a + 1 < parametric_t) {
+        a++;
+    }
+    
+    while(b + 1 < segments * res && b < parametric_t) {
+        b++;
+    }
+    
+    distance = (parametric_t - a) / (b - a);
+    
+    return lookup_table[a] * ( 1 - distance) + lookup_table[b] * (distance);
 }
 
 void Track::calculate_lookup() {
-    lookup_table[0] = get_point(0);
-    for (float t = .01; t < segments; t += .01) {
-        lookup_table[t] = get_point(t);
+    int res = 100;
+    for (float t = 0; t < segments * res; t ++) {
+        lookup_table[t] = get_point(t / res);
     }
 }
