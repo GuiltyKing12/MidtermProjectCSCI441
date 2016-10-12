@@ -107,7 +107,7 @@ Vector Track::parametric_normal() {
     return parametric_dir().Cross(Vector(1,0,0));
 }
 
-Point Track::arc_move() {
+Point Track::arc_pos() {
     int a = 0;
     int b = 1;
     for (int i = 0; i < segments * 100; i += 1) {
