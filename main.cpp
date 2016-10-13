@@ -95,7 +95,9 @@ void calculateFPS() {
         // reset frames
         frame = 0;
     }
-    
+}
+
+void drawFps() {
     // in order to display the text we need to first save our current matrix and go through setting the display for a 2D view
     glMatrixMode(GL_PROJECTION);
     glPushMatrix(); {
@@ -229,7 +231,7 @@ void render() {
       drawScene(true);
       glViewport(0, 0, window_width, window_height);
   }
-  calculateFPS();
+    drawFps();
   glutSwapBuffers();
 }
 
@@ -366,6 +368,7 @@ void subMenu_cameraType_callback(int option) {
 
 void render_timer(int value) {
   check_keys();
+  calculateFPS();
   glutPostRedisplay();
 
   glutTimerFunc(1000.0 / 24.0, render_timer, 0);
