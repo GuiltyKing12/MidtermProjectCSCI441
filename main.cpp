@@ -18,7 +18,7 @@
 #include <vector>
 #include <string>
 #include "terrain.h"
-#include "objects.h"
+#include "object.h"
 #include "camera.h"
 #include "point.h"
 #include "Artoria.h"
@@ -51,10 +51,10 @@ float fps;
 string terrain_points;
 string bezier_points;
 string lunyPath;
-string objects;
+string objects_list;
 
 Terrain t;
-Objects o;
+vector<Object> objs;
 Track tr;
 
 bool fpvMode = false;
@@ -133,13 +133,25 @@ void calculateFPS() {
 
 // Environment setup functions.
 
+void drawObjs() {
+  for(int i = 0; i < objs.size(); i++) {
+	//fprintf(stdout, "stufcoords: %f  ", objs.at(i).coords[0]);
+	//fprintf(stdout, "stufcoords: %f\n", objs.at(i).coords[1]);
+	//Point p = t.bez_patch(objs.at(i).coords[0], objs.at(i).coords[1]);
+	Point p = t.bez_patch(objs.at(i).loc.x/100, objs.at(i).loc.z/100);
+	//Vector n = t.normal(objs.at(i).coords[0], objs.at(i).coords[1]) * 15;
+	Vector n = t.normal(objs.at(i).loc.x/100, objs.at(i).loc.z/100) * 15;
+	objs.at(i).draw(p, n);
+  }
+}
+
 void generate_env_dl() {
   glMatrixMode(GL_MODELVIEW);
   envDL = glGenLists(1);
   glNewList(envDL, GL_COMPILE);
     glPushMatrix();
       t.draw();
-	  o.load_and_draw();
+	  drawObjs();
       tr.draw();
     glPopMatrix();
   glEndList();
@@ -415,11 +427,48 @@ bool loadInputFiles( char* file ) {
   lunyPath = temp.c_str();
     
   fin >> temp;
-  objects = temp.c_str();
+  objects_list = temp.c_str();
   //fprintf(stdout, "Objects File: %s\n", objects);
   
   fin.close();
   return true;
+}
+
+void loadObjs(string file) {
+  ifstream fin(file.c_str());
+  string line;
+  getline(fin, line);
+  int num_objects = atoi(line.c_str());
+
+  string object_type;
+  string object_location;
+  float object_size;
+  
+  for (int i = 0; i < num_objects; i ++) {
+	float coords [2];
+	
+    getline(fin, line);
+	object_type = line.c_str();
+	
+	int count = 0;
+    int pos = 0;
+	getline(fin, line);
+	line += ',';
+	for(int j = 0; j < line.length(); j++) {
+      if(line.at(j) == ',') {
+        coords[count] = atof(line.substr(pos, j).c_str());
+        pos = j + 1;
+        count++;
+      }
+    }
+	
+	getline(fin, line);
+	object_size = atof(line.c_str());
+	
+	Point object_location(coords[0], 0, coords[1]);
+	Object o = Object(object_type, object_location, object_size);
+	objs.push_back(o);
+  }
 }
 
 void create_menu() {
@@ -480,6 +529,8 @@ int main(int argc, char** argv) {
     return(1);
   }
 
+  loadObjs(objects_list);
+  
   float cameraTheta = M_PI / 3.0f;
   float cameraPhi = 2.8f;
   float cameraRadius = 300;
