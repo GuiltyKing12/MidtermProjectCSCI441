@@ -228,7 +228,7 @@ void render() {
   drawScene(false);
   // if fpv camera on we then repeat above process for a second view
   if(fpvMode) {
-      scissorScene(window_width / 4, window_height / 4);
+      scissorScene(window_width / 3, window_height / 3);
       glEnable(GL_SCISSOR_TEST);
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       glDisable(GL_SCISSOR_TEST);
@@ -394,12 +394,14 @@ void anim_timer(int value) {
   artoria->shakeTail();
   artoria->luny.move();
   artoria->luny.flap();
-  artoria->position = tr.parametric_pos();
+  Point parametric = tr.parametric_pos();
+  artoria->position = Point(parametric.x, parametric.y + 15, parametric.z);
   artoria->orientationAngle += artoria->direction.Dot(tr.parametric_dir());
   artoria->direction = tr.parametric_dir();
   artoria->surfaceNormal = tr.parametric_normal();
     
-  finjuh->position = tr.arc_pos();
+  Point arc = tr.arc_pos();
+  finjuh->position = Point(arc.x, arc.y+10,arc.z);
   finjuh->orientation += finjuh->direction.Dot(tr.parametric_dir());
   finjuh->direction = tr.parametric_dir();
   finjuh->surfaceNormal = tr.parametric_normal();
@@ -540,11 +542,12 @@ int main(int argc, char** argv) {
   float cameraRadius = 300;
     
   // draw the heroes
-  artoria = new Artoria(tr.get_point(0), Vector(0, 0, 1), lunyPath);
+  Point start = tr.get_point(0);
+  artoria = new Artoria(Point(start.x, start.y + 15, start.z), Vector(0, 0, 1), lunyPath);
   artoria->orientationAngle = -artoria->direction.Dot(tr.parametric_dir());
   artoria->direction = tr.parametric_dir();
-  finjuh = new Finjuh(Point(20, 0, 20), Vector(0, 0, 1));
-  finjuh->orientation = -finjuh->direction.Dot(tr.parametric_dir());
+  finjuh = new Finjuh(Point(start.x, start.y+15, start.z), Vector(0, 0, 1));
+  finjuh->orientation = -finjuh->direction.Dot(tr.arc_dir());
   finjuh->direction = tr.parametric_dir();
   wb = new Wb(Point(0, 20, 0), Vector(0, 1, 0), bezier_points);
   
