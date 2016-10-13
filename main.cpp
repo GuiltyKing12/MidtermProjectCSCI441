@@ -182,6 +182,7 @@ void drawScene(bool fpv) {
     }
     if (!fpv || fpvHero != finjuh) {
       finjuh->drawHero();
+	  finjuh->moveArms();
     }
     if (!fpv || fpvHero != wb) {
       wb->draw(keys_down[W] || keys_down[A] || keys_down[S] || keys_down[D]);

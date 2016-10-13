@@ -209,8 +209,7 @@ void Finjuh::moveForward() {
     else if((position.z -= direction.z * .25) < -50)
         position.z = -50;
     
-    appAngle += appMovmtSpd;
-    if(appAngle == 60 || appAngle == -60) appMovmtSpd = -appMovmtSpd;
+    moveArms();
 }
 
 void Finjuh::moveBackward() {
@@ -224,6 +223,10 @@ void Finjuh::moveBackward() {
     else if((position.z += direction.z * .25) < -50)
         position.z = -50;
     
-    appAngle -= appMovmtSpd;
+    moveArms();
+}
+
+void Finjuh::moveArms() {
+	appAngle += appMovmtSpd;
     if(appAngle == 60 || appAngle == -60) appMovmtSpd = -appMovmtSpd;
 }

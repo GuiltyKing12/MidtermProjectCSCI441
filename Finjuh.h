@@ -51,4 +51,5 @@ public:
 	void recomputeDirection();
 	void moveForward();
 	void moveBackward();
+	void moveArms();
 };

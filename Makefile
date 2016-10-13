@@ -49,7 +49,7 @@ USING_OPENGL = 1
 #############################
 
 CXX    = g++
-CFLAGS = -Wall -g -std=c++11
+CFLAGS = -Wall -g
 
 INCPATH += -I./include
 
