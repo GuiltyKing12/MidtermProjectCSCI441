@@ -1,5 +1,5 @@
-#ifndef OBJECTS_H
-#define OBJECTS_H
+#ifndef OBJECT_H
+#define OBJECT_H
 
 #ifdef __APPLE__
   #include <GLUT/glut.h>
@@ -14,23 +14,23 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <math.h>
+#include "point.h"
 #include "vector.h"
 
 using namespace std;
 
-class Objects {
+class Object {
   public:
-    Objects();
-    Objects(std::string fn);
+    Object();
+	Object(string t, Point p, float s);
 
-    void load_and_draw();
+    void draw(Point pos, Vector norm);
 
-  private:
-    string file;
-    int num_objects;
-  
-    void drawTree();
-	void drawRock();
+    string type;
+    //float coords [];
+	Point loc;
+	float size;
 };
 
 #endif
