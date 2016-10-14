@@ -3,7 +3,7 @@ Name: <ADD YOUR NAME AND EMAIL BEFORE TURNING IT IN>
 Guild Name: Guild the Lily
 
 Guild Members:
-Zachary Webb 
+Zack Webb 
 Kito Acosta 
 Brandon Her
 
@@ -21,11 +21,11 @@ Usage Instruction:
     Program initially starts in Arc Ball mode
     Camera controls
     In Arcball Mode:
-      Right Click Drag moves the camera's postion about the target
-      Right Click + Ctrl + drag zooms camera away or towards target
+      Left Click Drag moves the camera's postion about the target
+      Left Click + Ctrl + drag zooms camera away or towards target
 
     In Free Cam Mode:
-      Right click Drag changes the orientation of the camera. Updates the direction
+      Left click Drag changes the orientation of the camera. Updates the direction
       faced
       Pressing 'i' moves camera fowards
       Pressing 'k' moves camera backwards
@@ -37,13 +37,13 @@ Usage Instruction:
     'w' moves wandering hero forward
     's' moves wandering hero backwards
     'a' rotates hero left
-    'b' rotates hero right
+    'd' rotates hero right
 
     'esc' 'q' exits the program
 
 Compile Instruction:
     compile by running 'make' or 'gmake'
-    run by entering './guildwars <name of input file>'
+    run by entering './guildWars <name of input file>'
 
 Notes/Bugs:
     Under some bezier curves heroes will not be able to correctly set heading
@@ -80,7 +80,7 @@ File Input Description:
     ... - repeat
 
 Work Distribution:
-Zachary Webb -
+Zack Webb -
   Created classes
     Terrain
     Track
